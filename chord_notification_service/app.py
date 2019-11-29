@@ -3,6 +3,8 @@ import os
 
 from flask import Flask, jsonify
 
+from .db import *
+
 
 SERVICE_TYPE = "ca.c3g.chord:notification:{}".format(chord_notification_service.__version__)
 SERVICE_ID = os.environ.get("SERVICE_ID", SERVICE_TYPE)
@@ -12,6 +14,14 @@ application = Flask(__name__)
 application.config.from_mapping(
     DATABASE=os.environ.get("DATABASE", "chord_notification_service.db")
 )
+
+application.teardown_appcontext(close_db)
+
+with application.app_context():
+    if not os.path.exists(os.path.join(os.getcwd(), application.config["DATABASE"])):
+        init_db()
+    else:
+        update_db()
 
 
 @application.route("/service-info", methods=["GET"])
