@@ -1,6 +1,7 @@
 import sqlite3
 import uuid
 
+from datetime import datetime
 from flask import current_app, g
 from typing import Optional
 
@@ -60,13 +61,14 @@ def get_notification(c, n_id: str) -> Optional[dict]:
     return notification_dict(n)
 
 
-def create_notification(db, c, title, description, action_type, action_target) -> Optional[str]:
+def create_notification(db, c, title, description, notification_type, action_target) -> Optional[str]:
     new_id = str(uuid.uuid4())  # TODO: Prevent conflict
     c.execute("SELECT * FROM notifications WHERE id = ?", (new_id,))
     if c.fetchone() is not None:
         return None
 
-    c.execute("INSERT INTO notifications (id, title, description, action_type, action_target) VALUES (?, ?, ?, ?, ?)",
-              (new_id, title, description, action_type, action_target))
+    c.execute("INSERT INTO notifications (id, title, description, notification_type, action_target, timestamp) "
+              "VALUES (?, ?, ?, ?, ?, ?)",
+              (new_id, title, description, notification_type, action_target, datetime.utcnow().isoformat()))
     db.commit()
     return new_id
