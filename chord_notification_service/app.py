@@ -29,18 +29,21 @@ with application.app_context():
         update_db()
 
 
-    def event_handler(message):
-        db = get_db()
-        c = db.cursor()
+def event_handler(message):
+    db = get_new_db_connection()  # TODO: Wasteful
+    c = db.cursor()
 
-        if message["type"] == EVENT_CREATE_NOTIFICATION:
-            new_id = create_notification(db, c, message["data"]["title"], message["data"]["description"],
-                                         message["data"]["action_type"], message["data"]["action_target"])
-            if new_id:
-                event_bus.publish_service_event(SERVICE_ARTIFACT, EVENT_NOTIFICATION, get_notification(c, new_id))
+    if message["type"] == EVENT_CREATE_NOTIFICATION:
+        new_id = create_notification(db, c, message["data"]["title"], message["data"]["description"],
+                                     message["data"]["notification_type"], message["data"]["action_target"])
+        if new_id:
+            event_bus.publish_service_event(SERVICE_ARTIFACT, EVENT_NOTIFICATION, get_notification(c, new_id))
 
-    event_bus.add_handler("chord.*", event_handler)
-    event_bus.start_event_loop()
+    db.close()
+
+
+event_bus.add_handler("chord.*", event_handler)
+event_bus.start_event_loop()
 
 
 @application.route("/notifications", methods=["GET"])
