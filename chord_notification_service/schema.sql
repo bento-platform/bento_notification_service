@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS notifications;
 
 CREATE TABLE notifications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,  -- UUID
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     action_type TEXT,  -- Generic fields to be used at a notification-specific level to guide UIs

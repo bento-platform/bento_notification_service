@@ -1,12 +1,18 @@
 import sqlite3
+import uuid
 
 from flask import current_app, g
+from typing import Optional
+
+from .notifications import notification_dict
 
 __all__ = [
     "get_db",
     "close_db",
     "init_db",
     "update_db",
+    "get_notification",
+    "create_notification",
 ]
 
 
@@ -43,3 +49,24 @@ def update_db():
         return
 
     # TODO
+
+
+def get_notification(c, n_id: str) -> Optional[dict]:
+    c.execute("SELECT * FROM notifications WHERE id = ?", (n_id,))
+    n = c.fetchone()
+    if n is None:
+        return None
+
+    return notification_dict(n)
+
+
+def create_notification(db, c, title, description, action_type, action_target) -> Optional[str]:
+    new_id = str(uuid.uuid4())  # TODO: Prevent conflict
+    c.execute("SELECT * FROM notifications WHERE id = ?", (new_id,))
+    if c.fetchone() is not None:
+        return None
+
+    c.execute("INSERT INTO notifications (id, title, description, action_type, action_target) VALUES (?, ?, ?, ?, ?)",
+              (new_id, title, description, action_type, action_target))
+    db.commit()
+    return new_id
