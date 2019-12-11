@@ -72,7 +72,7 @@ def get_notification(c, n_id: str) -> Optional[dict]:
 
 
 def create_notification(db, c, title, description, notification_type, action_target) -> Optional[str]:
-    new_id = str(uuid.uuid4())  # TODO: Prevent conflict
+    new_id = str(uuid.uuid4())
     c.execute("SELECT * FROM notifications WHERE id = ?", (new_id,))
     if c.fetchone() is not None:
         return None

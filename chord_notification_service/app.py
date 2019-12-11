@@ -1,5 +1,6 @@
 import chord_notification_service
 import os
+import sys
 import uuid
 
 from chord_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION
@@ -29,9 +30,10 @@ def event_handler(message):
     db = get_new_db_connection()  # TODO: Wasteful
     c = db.cursor()
 
-    if message["type"] == EVENT_CREATE_NOTIFICATION:
-        new_id = create_notification(db, c, message["data"]["title"], message["data"]["description"],
-                                     message["data"]["notification_type"], message["data"]["action_target"])
+    event = message["data"]
+    if event["type"] == EVENT_CREATE_NOTIFICATION:
+        new_id = create_notification(db, c, event["data"]["title"], event["data"]["description"],
+                                     event["data"]["notification_type"], event["data"]["action_target"])
         if new_id:
             event_bus.publish_service_event(SERVICE_ARTIFACT, EVENT_NOTIFICATION, get_notification(c, new_id))
 
@@ -68,7 +70,7 @@ def notification_read(notification_id: uuid.UUID):
     c.execute("UPDATE notifications SET read = 1 WHERE id = ?", (str(notification_id),))
     db.commit()
 
-    return application.response_class(status=201)
+    return application.response_class(status=204)
 
 
 @application.route("/service-info", methods=["GET"])
