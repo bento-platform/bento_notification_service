@@ -1,7 +1,7 @@
 import sqlite3
 import uuid
 
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import current_app, g
 from typing import Optional
 
@@ -74,6 +74,6 @@ def create_notification(db, c, title, description, notification_type, action_tar
 
     c.execute("INSERT INTO notifications (id, title, description, notification_type, action_target, timestamp) "
               "VALUES (?, ?, ?, ?, ?, ?)",
-              (new_id, title, description, notification_type, action_target, datetime.utcnow().isoformat()))
+              (new_id, title, description, notification_type, action_target, datetime.now(timezone.utc).isoformat()))
     db.commit()
     return new_id
