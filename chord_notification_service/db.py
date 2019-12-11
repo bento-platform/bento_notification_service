@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import uuid
 
@@ -8,6 +9,7 @@ from typing import Optional
 from .notifications import notification_dict
 
 __all__ = [
+    "DATABASE",
     "get_new_db_connection",
     "get_db",
     "close_db",
@@ -18,8 +20,11 @@ __all__ = [
 ]
 
 
+DATABASE = os.environ.get("DATABASE", "chord_notification_service.db")
+
+
 def get_new_db_connection():
-    return sqlite3.connect(current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES)
+    return sqlite3.connect(DATABASE, detect_types=sqlite3.PARSE_DECLTYPES)
 
 
 def get_db():
