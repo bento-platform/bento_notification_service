@@ -1,6 +1,5 @@
 import chord_notification_service
 import os
-import sys
 import uuid
 
 from chord_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION
