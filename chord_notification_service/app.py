@@ -70,7 +70,7 @@ def notification_read(notification_id: uuid.UUID):
     c.execute("UPDATE notifications SET read = 1 WHERE id = ?", (str(notification_id),))
     db.commit()
 
-    return application.response_class(status=201)
+    return application.response_class(status=204)
 
 
 @application.route("/service-info", methods=["GET"])
