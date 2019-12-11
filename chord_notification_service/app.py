@@ -1,5 +1,6 @@
 import chord_notification_service
 import os
+import sys
 import uuid
 
 from chord_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION
@@ -28,6 +29,8 @@ with application.app_context():
 def event_handler(message):
     db = get_new_db_connection()  # TODO: Wasteful
     c = db.cursor()
+
+    print(message, file=sys.stderr)
 
     if message["type"] == EVENT_CREATE_NOTIFICATION:
         new_id = create_notification(db, c, message["data"]["title"], message["data"]["description"],
