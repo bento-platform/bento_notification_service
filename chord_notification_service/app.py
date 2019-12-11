@@ -30,11 +30,10 @@ def event_handler(message):
     db = get_new_db_connection()  # TODO: Wasteful
     c = db.cursor()
 
-    print(message, file=sys.stderr)
-
-    if message["type"] == EVENT_CREATE_NOTIFICATION:
-        new_id = create_notification(db, c, message["data"]["title"], message["data"]["description"],
-                                     message["data"]["notification_type"], message["data"]["action_target"])
+    event = message["data"]
+    if event["type"] == EVENT_CREATE_NOTIFICATION:
+        new_id = create_notification(db, c, event["data"]["title"], event["data"]["description"],
+                                     event["data"]["notification_type"], event["data"]["action_target"])
         if new_id:
             event_bus.publish_service_event(SERVICE_ARTIFACT, EVENT_NOTIFICATION, get_notification(c, new_id))
 
