@@ -2,6 +2,7 @@ import chord_notification_service
 import os
 import uuid
 
+from chord_lib.auth.flask_decorators import flask_permissions_owner
 from chord_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION
 from flask import Flask, jsonify
 
@@ -44,6 +45,7 @@ event_bus.start_event_loop()
 
 
 @application.route("/notifications", methods=["GET"])
+@flask_permissions_owner
 def notification_list():
     c = get_db().cursor()
     c.execute("SELECT * FROM notifications")
@@ -51,6 +53,7 @@ def notification_list():
 
 
 @application.route("/notifications/<int:notification_id>", methods=["GET"])
+@flask_permissions_owner
 def notification_detail(notification_id: int):
     c = get_db().cursor()
     notification = get_notification(c, str(notification_id))
@@ -58,6 +61,7 @@ def notification_detail(notification_id: int):
 
 
 @application.route("/notifications/<uuid:notification_id>/read", methods=["POST"])
+@flask_permissions_owner
 def notification_read(notification_id: uuid.UUID):
     db = get_db()
     c = db.cursor()
