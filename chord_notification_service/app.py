@@ -1,10 +1,14 @@
 import chord_notification_service
 import os
+import sys
+import traceback
 import uuid
 
 from chord_lib.auth.flask_decorators import flask_permissions_owner
 from chord_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION
+from chord_lib.responses.flask_errors import *
 from flask import Flask, jsonify
+from werkzeug.exceptions import BadRequest, NotFound
 
 from .db import *
 from .events import *
@@ -24,6 +28,26 @@ with application.app_context():
         init_db()
     else:
         update_db()
+
+
+# TODO: Figure out common pattern and move to chord_lib
+
+def _wrap_tb(func):  # pragma: no cover
+    # TODO: pass exception?
+    def handle_error(_e):
+        print("[CHORD Notification Service] Encountered error:", file=sys.stderr)
+        traceback.print_exc()
+        return func()
+    return handle_error
+
+
+def _wrap(func):  # pragma: no cover
+    return lambda _e: func()
+
+
+application.register_error_handler(Exception, _wrap_tb(flask_internal_server_error))  # Generic catch-all
+application.register_error_handler(BadRequest, _wrap(flask_bad_request_error))
+application.register_error_handler(NotFound, _wrap(flask_not_found_error))
 
 
 def event_handler(message):
@@ -52,25 +76,25 @@ def notification_list():
     return jsonify([notification_dict(n) for n in c.fetchall()])
 
 
-@application.route("/notifications/<int:notification_id>", methods=["GET"])
+@application.route("/notifications/<n_id>", methods=["GET"])
 @flask_permissions_owner
-def notification_detail(notification_id: int):
+def notification_detail(n_id: uuid.UUID):
     c = get_db().cursor()
-    notification = get_notification(c, str(notification_id))
-    return notification if notification is not None else application.response_class(status=404)
+    notification = get_notification(c, str(n_id))
+    return notification if notification is not None else flask_not_found_error(f"Notification {n_id} not found")
 
 
-@application.route("/notifications/<uuid:notification_id>/read", methods=["POST"])
+@application.route("/notifications/<n_id>/read", methods=["POST"])
 @flask_permissions_owner
-def notification_read(notification_id: uuid.UUID):
+def notification_read(n_id: uuid.UUID):
     db = get_db()
     c = db.cursor()
 
-    notification = get_notification(c, str(notification_id))
+    notification = get_notification(c, str(n_id))
     if notification is None:
-        return application.response_class(status=404)
+        return flask_not_found_error(f"Notification {n_id} not found")
 
-    c.execute("UPDATE notifications SET read = 1 WHERE id = ?", (str(notification_id),))
+    c.execute("UPDATE notifications SET read = 1 WHERE id = ?", (str(n_id),))
     db.commit()
 
     return application.response_class(status=204)
