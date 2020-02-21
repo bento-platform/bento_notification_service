@@ -1,7 +1,5 @@
 import chord_notification_service
 import os
-import sys
-import traceback
 import uuid
 
 from chord_lib.auth.flask_decorators import flask_permissions_owner
@@ -18,36 +16,24 @@ from .notifications import notification_dict
 SERVICE_ARTIFACT = "notification"
 SERVICE_TYPE = "ca.c3g.chord:{}:{}".format(SERVICE_ARTIFACT, chord_notification_service.__version__)
 SERVICE_ID = os.environ.get("SERVICE_ID", SERVICE_TYPE)
+SERVICE_NAME = "CHORD Notification Service"
 
 
 application = Flask(__name__)
 application.teardown_appcontext(close_db)
+
+# Generic catch-all
+application.register_error_handler(Exception, flask_error_wrap_with_traceback(flask_internal_server_error,
+                                                                              service_name=SERVICE_NAME))
+application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_request_error))
+application.register_error_handler(NotFound, flask_error_wrap(flask_not_found_error))
+
 
 with application.app_context():
     if not os.path.exists(os.path.join(os.getcwd(), DATABASE)):
         init_db()
     else:
         update_db()
-
-
-# TODO: Figure out common pattern and move to chord_lib
-
-def _wrap_tb(func):  # pragma: no cover
-    # TODO: pass exception?
-    def handle_error(_e):
-        print("[CHORD Notification Service] Encountered error:", file=sys.stderr)
-        traceback.print_exc()
-        return func()
-    return handle_error
-
-
-def _wrap(func):  # pragma: no cover
-    return lambda _e: func()
-
-
-application.register_error_handler(Exception, _wrap_tb(flask_internal_server_error))  # Generic catch-all
-application.register_error_handler(BadRequest, _wrap(flask_bad_request_error))
-application.register_error_handler(NotFound, _wrap(flask_not_found_error))
 
 
 def event_handler(message):
@@ -76,7 +62,7 @@ def notification_list():
     return jsonify([notification_dict(n) for n in c.fetchall()])
 
 
-@application.route("/notifications/<n_id>", methods=["GET"])
+@application.route("/notifications/<uuid:n_id>", methods=["GET"])
 @flask_permissions_owner
 def notification_detail(n_id: uuid.UUID):
     c = get_db().cursor()
@@ -84,7 +70,7 @@ def notification_detail(n_id: uuid.UUID):
     return notification if notification is not None else flask_not_found_error(f"Notification {n_id} not found")
 
 
-@application.route("/notifications/<n_id>/read", methods=["POST"])
+@application.route("/notifications/<uuid:n_id>/read", methods=["POST"])
 @flask_permissions_owner
 def notification_read(n_id: uuid.UUID):
     db = get_db()
@@ -106,7 +92,7 @@ def service_info():
 
     return jsonify({
         "id": SERVICE_ID,
-        "name": "CHORD Notification Service",  # TODO: Should be globally unique?
+        "name": SERVICE_NAME,
         "type": SERVICE_TYPE,
         "description": "Notification service for a CHORD application.",
         "organization": {
