@@ -7,7 +7,7 @@ with open("README.md", "r") as rf:
 
 setuptools.setup(
     name="chord_notification_service",
-    version="0.1.0",
+    version="0.1.1",
 
     python_requires=">=3.6",
     install_requires=["chord_lib[flask]==0.5.0", "Flask>=1.1,<2.0"],
