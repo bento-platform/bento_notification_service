@@ -30,16 +30,14 @@ def test_get_notification(client, notification):
 
 def test_get_notification_fail(client):
     res = client.get(f"/notifications/123")
-    data = res.get_json()
 
     assert res.status_code == 404
 
 
 def test_notification_read(client, notification):
-    assert notification.read == False
+    assert notification.read is False
 
     res = client.put(f"/notifications/{notification.id}/read")
-    data = res.get_json()
 
     assert res.status_code == 204
 
@@ -47,4 +45,4 @@ def test_notification_read(client, notification):
     data = res.get_json()
 
     assert res.status_code == 200
-    assert data['read'] == True
+    assert data['read'] is True

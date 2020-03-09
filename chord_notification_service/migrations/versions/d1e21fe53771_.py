@@ -24,7 +24,7 @@ def upgrade():
     sa.Column('description', sa.String(), nullable=False),
     sa.Column('notification_type', sa.String(), nullable=True),
     sa.Column('action_target', sa.String(), nullable=True),
-    sa.Column('read', sa.Integer(), nullable=True),
+    sa.Column('_read', sa.Integer(), nullable=True),
     sa.Column('timestamp', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )

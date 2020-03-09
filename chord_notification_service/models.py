@@ -10,15 +10,19 @@ class Notification(db.Model):
     description = db.Column(db.String, nullable=False)
     notification_type = db.Column(db.String)
     action_target = db.Column(db.String)
-    read = db.Column(db.Integer, default=0)
+    _read = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime, server_default=func.now())
 
     def __init__(self, *args, **kwargs):
         self.id = str(uuid4())
         super().__init__(*args, **kwargs)
 
+    @property
+    def read(self):
+        return bool(self._read)
+
     def is_read(self):
-        self.read = 1
+        self._read = 1
 
     @property
     def serialize(self):
