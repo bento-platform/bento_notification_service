@@ -1,0 +1,1 @@
+from chord_notification_service.app import application

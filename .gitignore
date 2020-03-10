@@ -1,4 +1,19 @@
-env/
-*.db
-__pycache__
+# chord_notification_service specific
+test.sqlite3
+db.sqlite3
+
+# testing related
+.coverage
+.tox
+
+# IDE stuff
+.idea/workspace.xml
 .idea/dataSources*
+*.swp
+*.swo
+
+# others
+*.pyc
+*.db
+env
+__pycache__
