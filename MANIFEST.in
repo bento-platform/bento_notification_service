@@ -1,1 +1,2 @@
+include chord_notification_service/package.cfg
 recursive-include chord_notification_service/migrations *

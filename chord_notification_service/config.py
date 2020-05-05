@@ -1,13 +1,13 @@
+import configparser
 import os
 from pathlib import Path
-from chord_lib.utils import get_own_version
 
 
-VERSION = get_own_version(
-    os.path.join(
-        Path(os.path.dirname(os.path.realpath(__file__))).parent, "setup.py"),
-    "chord_notification_service"
-)
+config = configparser.ConfigParser()
+config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), "package.cfg"))
+
+
+VERSION = config["package"]["version"]
 APP_DIR = Path(__file__).resolve().parents[0]
 
 if "DATABASE" in os.environ:
