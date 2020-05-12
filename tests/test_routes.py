@@ -29,7 +29,7 @@ def test_get_notification(client, notification):
 
 
 def test_get_notification_fail(client):
-    res = client.get(f"/notifications/123")
+    res = client.get("/notifications/123")
 
     assert res.status_code == 404
 
