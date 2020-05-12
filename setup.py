@@ -23,8 +23,8 @@ setuptools.setup(
         "Flask-Migrate>=2.5,<3.0"
     ],
 
-    author=config["authors"],
-    author_email=config["author_emails"],
+    author=config["package"]["authors"],
+    author_email=config["package"]["author_emails"],
 
     description="A notification service for the CHORD project.",
     long_description=long_description,
