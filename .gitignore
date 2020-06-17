@@ -5,6 +5,7 @@ db.sqlite3
 # testing related
 .coverage
 .tox
+htmlcov/
 
 # IDE stuff
 .idea/workspace.xml

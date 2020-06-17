@@ -15,8 +15,8 @@ def test_get_notifications(client, notification):
 
     assert res.status_code == 200
     assert len(data) == 1
-    assert data[0]['title'] == notification.title
-    assert data[0]['description'] == notification.description
+    assert data[0]["title"] == notification.title
+    assert data[0]["description"] == notification.description
 
 
 def test_get_notification(client, notification):
@@ -24,12 +24,12 @@ def test_get_notification(client, notification):
     data = res.get_json()
 
     assert res.status_code == 200
-    assert data['title'] == notification.title
-    assert data['description'] == notification.description
+    assert data["title"] == notification.title
+    assert data["description"] == notification.description
 
 
 def test_get_notification_fail(client):
-    res = client.get("/notifications/123")
+    res = client.get("/notifications/ca2c2063-e744-408b-b486-79d3a48ef179")
 
     assert res.status_code == 404
 
@@ -45,4 +45,10 @@ def test_notification_read(client, notification):
     data = res.get_json()
 
     assert res.status_code == 200
-    assert data['read'] is True
+    assert data["read"] is True
+
+
+def test_notification_read_fail(client):
+    res = client.put(f"/notifications/ca2c2063-e744-408b-b486-79d3a48ef179/read")
+
+    assert res.status_code == 404

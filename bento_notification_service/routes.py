@@ -1,8 +1,12 @@
 import uuid
+
 from bento_lib.auth.flask_decorators import flask_permissions_owner
 from bento_lib.responses.flask_errors import flask_not_found_error
 from flask import Blueprint, current_app, jsonify
-from .app import db
+
+from bento_notification_service import __version__
+from .db import db
+from .constants import SERVICE_NAME, SERVICE_TYPE
 from .models import Notification
 
 
@@ -42,14 +46,14 @@ def service_info():
     # Spec: https://github.com/ga4gh-discovery/ga4gh-service-info
 
     return jsonify({
-        "id": current_app.config['SERVICE_ID'],
-        "name": current_app.config['SERVICE_NAME'],
-        "type": current_app.config['SERVICE_TYPE'],
+        "id": current_app.config["SERVICE_ID"],
+        "name": SERVICE_NAME,
+        "type": SERVICE_TYPE,
         "description": "Notification service for a Bento platform node.",
         "organization": {
             "name": "C3G",
             "url": "http://www.computationalgenomics.ca"
         },
         "contactUrl": "mailto:david.lougheed@mail.mcgill.ca",
-        "version": current_app.config['VERSION']
+        "version": __version__,
     })
