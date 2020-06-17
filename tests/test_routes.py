@@ -1,4 +1,4 @@
-import chord_lib
+import bento_lib
 from jsonschema import validate
 
 
@@ -6,7 +6,7 @@ def test_service_info(client):
     res = client.get("/service-info")
     data = res.get_json()
 
-    validate(data, chord_lib.schemas.ga4gh.SERVICE_INFO_SCHEMA)
+    validate(data, bento_lib.schemas.ga4gh.SERVICE_INFO_SCHEMA)
 
 
 def test_get_notifications(client, notification):

@@ -1,8 +1,8 @@
 import os
 import pytest
-from chord_notification_service.app import application, db
-from chord_notification_service.config import BASEDIR
-from chord_notification_service.models import Notification
+from bento_notification_service.app import application, db
+from bento_notification_service.config import BASEDIR
+from bento_notification_service.models import Notification
 
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, "test.sqlite3")

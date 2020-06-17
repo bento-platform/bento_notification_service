@@ -1,1 +1,1 @@
-from chord_notification_service.app import application
+from bento_notification_service.app import application

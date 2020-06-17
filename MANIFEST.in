@@ -1,2 +1,2 @@
-include chord_notification_service/package.cfg
-recursive-include chord_notification_service/migrations *
+include bento_notification_service/package.cfg
+recursive-include bento_notification_service/migrations *

@@ -1,5 +1,5 @@
-# chord_notification_service
-Notification service for the CHORD project.
+# Bento Notification Service
+Notification service for the Bento platform.
 
 ## Running in Development
 

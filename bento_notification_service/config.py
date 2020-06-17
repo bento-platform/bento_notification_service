@@ -22,6 +22,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     VERSION = VERSION
     SERVICE_ARTIFACT = "notification"
-    SERVICE_TYPE = "ca.c3g.chord:notification:{}".format(VERSION)
+    SERVICE_TYPE = "ca.c3g.bento:notification:{}".format(VERSION)
     SERVICE_ID = os.environ.get("SERVICE_ID", SERVICE_TYPE)
-    SERVICE_NAME = "CHORD Notification Service"
+    SERVICE_NAME = "Bento Notification Service"

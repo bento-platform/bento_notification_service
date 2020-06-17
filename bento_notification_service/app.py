@@ -1,6 +1,6 @@
 import os
 
-from chord_lib.responses.flask_errors import (
+from bento_lib.responses.flask_errors import (
     flask_error_wrap,
     flask_error_wrap_with_traceback,
     flask_internal_server_error,
@@ -24,7 +24,7 @@ application.config.from_object(Config)
 db = SQLAlchemy(application)
 migrate = Migrate(application, db, directory=MIGRATION_DIR)
 
-from chord_notification_service.routes import notification_service  # noqa: E402
+from bento_notification_service.routes import notification_service  # noqa: E402
 application.register_blueprint(notification_service)
 
 # Generic catch-all
@@ -39,4 +39,4 @@ application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_reques
 application.register_error_handler(NotFound, flask_error_wrap(flask_not_found_error))
 
 
-from chord_notification_service import events  # noqa: E402, F401
+from bento_notification_service import events  # noqa: E402, F401

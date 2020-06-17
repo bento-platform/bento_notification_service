@@ -1,7 +1,7 @@
 from uuid import uuid4
 from datetime import timezone
 from sqlalchemy.sql import func
-from chord_notification_service.app import db
+from bento_notification_service.app import db
 
 
 class Notification(db.Model):

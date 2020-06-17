@@ -1,5 +1,5 @@
-from chord_lib.events import EventBus
-from chord_lib.events.types import (
+from bento_lib.events import EventBus
+from bento_lib.events.types import (
     EVENT_CREATE_NOTIFICATION,
     EVENT_NOTIFICATION,
     EVENT_NOTIFICATION_SCHEMA
@@ -36,7 +36,7 @@ try:
     event_bus = EventBus()
     event_bus.register_service_event_type(EVENT_NOTIFICATION, EVENT_NOTIFICATION_SCHEMA)
 
-    event_bus.add_handler("chord.*", event_handler)
+    event_bus.add_handler("bento.*", event_handler)
     event_bus.start_event_loop()
 except redis.exceptions.ConnectionError:
     application.logger.error("Could not start event bus, there is an issue with Redis")

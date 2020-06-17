@@ -1,6 +1,6 @@
 import uuid
-from chord_lib.auth.flask_decorators import flask_permissions_owner
-from chord_lib.responses.flask_errors import flask_not_found_error
+from bento_lib.auth.flask_decorators import flask_permissions_owner
+from bento_lib.responses.flask_errors import flask_not_found_error
 from flask import Blueprint, current_app, jsonify
 from .app import db
 from .models import Notification
@@ -45,7 +45,7 @@ def service_info():
         "id": current_app.config['SERVICE_ID'],
         "name": current_app.config['SERVICE_NAME'],
         "type": current_app.config['SERVICE_TYPE'],
-        "description": "Notification service for a CHORD application.",
+        "description": "Notification service for a Bento platform node.",
         "organization": {
             "name": "C3G",
             "url": "http://www.computationalgenomics.ca"
