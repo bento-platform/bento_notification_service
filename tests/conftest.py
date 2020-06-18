@@ -21,11 +21,11 @@ def client():
 
 
 # if not in session scope we get DetachedInstanceError, not bound to a Session
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def notification():
     n = Notification(
-        title='some title',
-        description='some description'
+        title="some title",
+        description="some description"
     )
 
     # Manually set ID for consistency's sake

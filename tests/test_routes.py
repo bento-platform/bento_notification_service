@@ -49,6 +49,6 @@ def test_notification_read(client, notification):
 
 
 def test_notification_read_fail(client):
-    res = client.put(f"/notifications/ca2c2063-e744-408b-b486-79d3a48ef179/read")
+    res = client.put("/notifications/ca2c2063-e744-408b-b486-79d3a48ef179/read")
 
     assert res.status_code == 404
