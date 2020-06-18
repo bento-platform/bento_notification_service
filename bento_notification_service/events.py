@@ -7,43 +7,50 @@ from bento_lib.events.types import (
     EVENT_NOTIFICATION_SCHEMA
 )
 
-from .app import application
 from .db import db
 from .constants import SERVICE_ARTIFACT, EVENT_PATTERN
 from .models import Notification
 
 
-def event_handler(message):
-    event = message["data"]
-
-    if event["type"] == EVENT_CREATE_NOTIFICATION:
-        n = Notification(
-            title=event["data"]["title"],
-            description=event["data"]["description"],
-            notification_type=event["data"]["notification_type"],
-            action_target=event["data"]["action_target"]
-        )
-
-        db.session.add(n)
-        db.session.commit()
-
-        if not n:
-            return
-
-        event_bus.publish_service_event(
-            SERVICE_ARTIFACT,
-            EVENT_NOTIFICATION,
-            n.serialize
-        )
+__all__ = ["start_event_bus"]
 
 
-# Not fake-able, redis is required here
-try:
-    event_bus = EventBus()
-    event_bus.register_service_event_type(EVENT_NOTIFICATION, EVENT_NOTIFICATION_SCHEMA)
+def start_event_bus(application):
+    def event_handler(eb: EventBus):
+        def _event_handler(message):
+            event = message["data"]
 
-    event_bus.add_handler(EVENT_PATTERN, event_handler)
-    event_bus.start_event_loop()
-except redis.exceptions.ConnectionError:  # pragma: no cover
-    application.logger.error("Could not connect to Redis")
-    exit(1)
+            if event["type"] != EVENT_CREATE_NOTIFICATION:
+                return
+
+            n = Notification(
+                title=event["data"]["title"],
+                description=event["data"]["description"],
+                notification_type=event["data"]["notification_type"],
+                action_target=event["data"]["action_target"]
+            )
+
+            db.session.add(n)
+            db.session.commit()
+
+            if not n:
+                return
+
+            eb.publish_service_event(
+                SERVICE_ARTIFACT,
+                EVENT_NOTIFICATION,
+                n.serialize
+            )
+
+        return _event_handler
+
+    # Not fake-able, redis is required here
+    try:
+        event_bus = EventBus()
+        event_bus.register_service_event_type(EVENT_NOTIFICATION, EVENT_NOTIFICATION_SCHEMA)
+
+        event_bus.add_handler(EVENT_PATTERN, event_handler(event_bus))
+        event_bus.start_event_loop()
+    except redis.exceptions.ConnectionError:  # pragma: no cover
+        application.logger.error("Could not connect to Redis")
+        exit(1)
