@@ -1,4 +1,8 @@
 # Bento Notification Service
+
+![Build Status](https://api.travis-ci.com/bento-platform/bento_notification_service.svg?branch=master)
+[![codecov](https://codecov.io/gh/bento-platform/bento_notification_service/branch/master/graph/badge.svg)](https://codecov.io/gh/bento-platform/bento_notification_service)
+
 Notification service for the Bento platform.
 
 ## Running in Development
