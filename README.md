@@ -14,7 +14,7 @@ installed using the following command:
 pip install -r requirements.txt
 ```
 
-Afterwards we need to setup the DB:
+Afterwards we need to set up the DB:
 
 ```bash
 flask db upgrade
