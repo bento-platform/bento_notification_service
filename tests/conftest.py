@@ -4,10 +4,10 @@ from bento_notification_service.db import db
 from bento_notification_service.models import Notification
 
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def client():
     application.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 
