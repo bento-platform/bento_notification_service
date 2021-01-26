@@ -18,9 +18,9 @@ setuptools.setup(
     install_requires=[
         "bento_lib[flask]==0.11.0",
         "Flask>=1.1.2,<2.0",
-        "SQLAlchemy>=1.3.18,<1.4",
-        "Flask-SQLAlchemy>=2.4.3,<3.0",
-        "Flask-Migrate>=2.5.3,<3.0"
+        "SQLAlchemy>=1.3.22,<1.4",
+        "Flask-SQLAlchemy>=2.4.4,<3.0",
+        "Flask-Migrate>=2.6.0,<3.0"
     ],
 
     author=config["package"]["authors"],
