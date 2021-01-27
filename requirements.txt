@@ -1,7 +1,7 @@
 alembic==1.5.2
 appdirs==1.4.4
 attrs==20.3.0
-bento-lib==0.11.0
+bento-lib==1.0.0
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
