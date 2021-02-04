@@ -12,7 +12,7 @@ config.read(os.path.join(os.path.dirname(os.path.realpath(__file__)), "bento_not
 
 setuptools.setup(
     name=config["package"]["name"],
-    version=config["package"]["name"],
+    version=config["package"]["version"],
 
     python_requires=">=3.6",
     install_requires=[
