@@ -8,7 +8,7 @@ WORKDIR /notification
 # Create data directory
 RUN mkdir -p /notification/data
 
-COPY . /notification
+COPY . .
 RUN ls /notification
 
 RUN ["pip", "install", "-r", "requirements.txt"]
