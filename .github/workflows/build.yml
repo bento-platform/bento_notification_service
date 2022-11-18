@@ -44,9 +44,10 @@ jobs:
             ghcr.io/bento-platform/bento_notification_service
           flavor: |
             latest=true
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+          # tags: |
+          #   type=semver,pattern={{version}}
+          #   type=semver,pattern={{major}}.{{minor}}
+          tags: latest
 
       - name: Build and push production image
         uses: docker/build-push-action@v3
@@ -55,6 +56,7 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          # tags: ${{ steps.meta.outputs.tags }}
+          tags: latest
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
