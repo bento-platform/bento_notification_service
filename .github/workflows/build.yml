@@ -33,30 +33,5 @@ jobs:
           registry-username: ${{ github.actor }}
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           image-name: ghcr.io/bento-platform/bento_notification_service
+          development-dockerfile: Dockerfile
           dockerfile: Dockerfile
-
-      - name: Set up production image metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        # if: ${{ github.event_name == 'release' }}
-        with:
-          images: |
-            ghcr.io/bento-platform/bento_notification_service
-          flavor: |
-            latest=true
-          # tags: |
-          #   type=semver,pattern={{version}}
-          #   type=semver,pattern={{major}}.{{minor}}
-          tags: latest
-
-      - name: Build and push production image
-        uses: docker/build-push-action@v3
-        # if: ${{ github.event_name == 'release' }}
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          # tags: ${{ steps.meta.outputs.tags }}
-          tags: latest
-          labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
