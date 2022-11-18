@@ -1,18 +1,14 @@
 name: Build and push bento_notification_service
 
-# on:
-#   release:
-#     types: [ published ]
-#   pull_request:
-#     branches:
-#       - master
-#   push:
-#     branches:
-#       - master
 on:
+  release:
+    types: [ published ]
+  pull_request:
+    branches:
+      - master
   push:
     branches:
-      - "features/self-dockerfile"
+      - master
 
 jobs:
   build-push:
