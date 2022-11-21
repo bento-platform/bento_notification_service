@@ -2,7 +2,7 @@ FROM ghcr.io/bento-platform/bento_base_image:python-debian-2022.10.11
 
 # TODO: change USER
 USER root
-RUN apt-get install libpq-dev python-dev
+RUN apt-get install -y libpq-dev python-dev
 
 WORKDIR /notification
 
