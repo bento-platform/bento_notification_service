@@ -4,6 +4,8 @@ FROM ghcr.io/bento-platform/bento_base_image:python-debian-2022.10.11
 USER root
 RUN apt-get install -y libpq-dev python-dev
 
+RUN pip install --no-cache-dir poetry==1.2.2 gunicorn==20.1.0
+
 WORKDIR /notification
 
 # Create data directory
@@ -16,7 +18,6 @@ COPY poetry.lock poetry.lock
 # Install production dependencies
 # Without --no-root, we get errors related to the code not being copied in yet.
 # But we don't want the code here, otherwise Docker cache doesn't work well.
-RUN pip install gunicorn==20.1.0
 RUN poetry install --without dev --no-root
 
 # Manually copy only what's relevant
@@ -31,5 +32,4 @@ RUN ls /notification
 RUN poetry install --without dev
 
 # Run
-COPY startup.sh ./startup.sh
-ENTRYPOINT [ "sh", "./startup.sh" ]
+ENTRYPOINT [ "sh", "./entrypoint.sh" ]
