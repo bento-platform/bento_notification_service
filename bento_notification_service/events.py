@@ -44,17 +44,14 @@ def start_event_bus(application):
 
         return _event_handler
 
-    socket = application.config["REDIS_SOCKET"]
-
-    # Use UNIX socket path if specified; otherwise, use host/port
-    redis_config = (
-        {"unix_socket_path": socket} if socket else
-        {"host": application.config["REDIS_HOST"],
-         "port": application.config["REDIS_PORT"]})
+    redis_config = {
+        "host": application.config["REDIS_HOST"],
+        "port": application.config["REDIS_PORT"],
+    }
 
     # Not fake-able, redis is required here
     try:
-        event_bus = EventBus(redis_config)
+        event_bus = EventBus(**redis_config)
         event_bus.register_service_event_type(EVENT_NOTIFICATION, EVENT_NOTIFICATION_SCHEMA)
 
         event_bus.add_handler(EVENT_PATTERN, event_handler(event_bus))
