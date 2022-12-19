@@ -16,7 +16,7 @@ BASEDIR = os.environ.get("DATABASE", APP_DIR.parent)
 class Config:
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASEDIR, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SERVICE_ID = os.environ.get("SERVICE_ID", SERVICE_TYPE)
+    SERVICE_ID = os.environ.get("SERVICE_ID", ":".join(SERVICE_TYPE.values()))
 
     # Resort to Redis defaults for host/port if not set
     REDIS_SOCKET = os.environ.get("REDIS_SOCKET")
