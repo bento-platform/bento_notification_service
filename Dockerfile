@@ -2,7 +2,7 @@ FROM ghcr.io/bento-platform/bento_base_image:python-debian-2022.10.11
 
 # TODO: change USER
 USER root
-RUN apt-get install -y libpq-dev python-dev
+RUN apt-get update -y && apt-get install -y libpq-dev python-dev
 
 RUN pip install --no-cache-dir poetry==1.2.2 gunicorn==20.1.0
 
