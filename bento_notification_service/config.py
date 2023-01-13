@@ -19,6 +19,5 @@ class Config:
     SERVICE_ID = os.environ.get("SERVICE_ID", ":".join(SERVICE_TYPE.values()))
 
     # Resort to Redis defaults for host/port if not set
-    REDIS_SOCKET = os.environ.get("REDIS_SOCKET")
     REDIS_HOST = os.environ.get("REDIS_HOST") or "localhost"
     REDIS_PORT = os.environ.get("REDIS_PORT") or 6379
