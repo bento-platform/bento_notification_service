@@ -1,5 +1,7 @@
 import redis
 
+from flask import current_app
+
 from bento_lib.events import EventBus
 from bento_lib.events.types import (
     EVENT_CREATE_NOTIFICATION,
@@ -22,6 +24,8 @@ def start_event_bus(application):
 
             if event["type"] != EVENT_CREATE_NOTIFICATION:
                 return
+
+            current_app.logger.debug(f"Recieved message: {message}")
 
             n = Notification(
                 title=event["data"]["title"],
