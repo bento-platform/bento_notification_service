@@ -1,5 +1,7 @@
 import redis
 
+from flask import Flask
+
 from bento_lib.events import EventBus
 from bento_lib.events.types import (
     EVENT_CREATE_NOTIFICATION,
@@ -15,7 +17,7 @@ from .models import Notification
 __all__ = ["start_event_bus"]
 
 
-def start_event_bus(application):
+def start_event_bus(application: Flask):
     def event_handler(eb: EventBus):
         def _event_handler(message):
             event = message["data"]
@@ -23,24 +25,27 @@ def start_event_bus(application):
             if event["type"] != EVENT_CREATE_NOTIFICATION:
                 return
 
-            n = Notification(
-                title=event["data"]["title"],
-                description=event["data"]["description"],
-                notification_type=event["data"]["notification_type"],
-                action_target=event["data"]["action_target"]
-            )
+            with application.app_context():
+                application.logger.debug(f"Recieved message: {message}")
 
-            db.session.add(n)
-            db.session.commit()
+                n = Notification(
+                    title=event["data"]["title"],
+                    description=event["data"]["description"],
+                    notification_type=event["data"]["notification_type"],
+                    action_target=event["data"]["action_target"]
+                )
 
-            if not n:
-                return
+                db.session.add(n)
+                db.session.commit()
 
-            eb.publish_service_event(
-                SERVICE_ARTIFACT,
-                EVENT_NOTIFICATION,
-                n.serialize
-            )
+                if not n:
+                    return
+
+                eb.publish_service_event(
+                    SERVICE_ARTIFACT,
+                    EVENT_NOTIFICATION,
+                    n.serialize
+                )
 
         return _event_handler
 

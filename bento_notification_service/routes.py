@@ -6,7 +6,7 @@ from flask import Blueprint, current_app, jsonify
 
 from bento_notification_service import __version__
 from .db import db
-from .constants import SERVICE_NAME, SERVICE_TYPE, ORG_C3G
+from .constants import BENTO_SERVICE_KIND, SERVICE_NAME, SERVICE_TYPE, ORG_C3G
 from .models import Notification
 
 
@@ -51,6 +51,9 @@ def service_info():
         "type": SERVICE_TYPE,
         "description": "Notification service for a Bento platform node.",
         "organization": ORG_C3G,
-        "contactUrl": "mailto:david.lougheed@mail.mcgill.ca",
+        "contactUrl": "mailto:info@c3g.ca",
         "version": __version__,
+        "bento": {
+            "serviceKind": BENTO_SERVICE_KIND,
+        },
     })
