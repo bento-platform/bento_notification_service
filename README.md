@@ -18,9 +18,9 @@ The Bento notification service is configured via environment variables
 
 ## Running in Development
 
-First, Poetry must be installed:
+First, Poetry `>=1.3.2` must be installed:
 ```
-pip install poetry
+pip install -U poetry
 ```
 
 Development dependencies are described in `pyproject.toml` using Poetry, and can be
