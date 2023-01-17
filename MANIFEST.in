@@ -1,2 +1,0 @@
-include bento_notification_service/package.cfg
-recursive-include bento_notification_service/migrations *
