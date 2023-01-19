@@ -20,6 +20,20 @@ def notification_list():
     return jsonify([n.serialize for n in notifications])
 
 
+@notification_service.route("/notifications/all-read", methods=["PUT"])
+@flask_permissions_owner
+def notification_all_read():
+    # TODO: This is slow/non-optimal but we shouldn't have enough notifications for it to matter.
+    #  Ideally, it would be done using a bulk update query.
+
+    for notification in Notification.query.filter_by(_read=False):
+        notification.is_read()
+
+    db.session.commit()
+
+    return current_app.response_class(status=204)
+
+
 @notification_service.route("/notifications/<uuid:n_id>", methods=["GET"])
 @flask_permissions_owner
 def notification_detail(n_id: uuid.UUID):

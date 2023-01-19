@@ -19,6 +19,20 @@ def test_get_notifications(client, notification):
     assert data[0]["description"] == notification.description
 
 
+def test_notifications_all_read(client, notification):
+    assert notification.read is False
+
+    res = client.put("/notifications/all-read")
+
+    assert res.status_code == 204
+
+    res = client.get(f"/notifications/{notification.id}")
+    data = res.get_json()
+
+    assert res.status_code == 200
+    assert data["read"] is True
+
+
 def test_get_notification(client, notification):
     res = client.get(f"/notifications/{notification.id}")
     data = res.get_json()

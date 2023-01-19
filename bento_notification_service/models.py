@@ -3,6 +3,11 @@ from datetime import timezone
 from sqlalchemy.sql import func
 from bento_notification_service.db import db
 
+__all__ = [
+    "Notification",
+    "HandledCreateNotifEvent",
+]
+
 
 class Notification(db.Model):
     id = db.Column(db.String, primary_key=True)
@@ -35,3 +40,18 @@ class Notification(db.Model):
             "read": bool(self.read),
             "timestamp": self.timestamp.astimezone(timezone.utc).isoformat()
         }
+
+
+class HandledCreateNotifEvent(db.Model):
+    """
+    Representation of a handled create_notification event, to allow for scaling the notification service
+    without accidentally handling an event more than once.
+    """
+
+    id = db.Column(db.String, primary_key=True)
+    notification = db.Column(db.String, db.ForeignKey(f"{Notification.__table__}.id"), nullable=False)
+    handled_at = db.Column(db.DateTime, server_default=func.now())
+
+    @property
+    def serialize(self):
+        return {"id": self.id, "handled_at": self.handled_at.astimezone(timezone.utc).isoformat()}
