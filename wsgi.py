@@ -1,1 +1,0 @@
-from bento_notification_service.app import application
