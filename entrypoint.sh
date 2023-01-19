@@ -10,10 +10,9 @@ fi
 # Run migrations, if needed
 flask db upgrade
 
-# Start API server - explicitly 1 worker + 1 thread, since event handling isn't parallelized
+# Start API server - explicitly 1 worker for now
 # shellcheck disable=SC2003
 # shellcheck disable=SC2046
 gunicorn "${FLASK_APP}" \
   --workers 1 \
-  --threads 1 \
   --bind "0.0.0.0:${INTERNAL_PORT}"
