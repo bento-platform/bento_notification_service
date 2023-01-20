@@ -35,3 +35,9 @@ Afterwards we need to set up the DB:
 ```bash
 flask db upgrade
 ```
+
+To create migrations, make sure your database is on the latest migration. Then, do the following:
+
+```bash
+flask db migrate -m "Some message here"
+```

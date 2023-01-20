@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export FLASK_ENV=development
-export FLASK_APP=bento_notification_service.app:application
+export FLASK_ENV='development'
+export FLASK_APP='bento_notification_service.app:create_app()'
 
 if [ -z "${INTERNAL_PORT}" ]; then
   # Set default internal port to 5000
