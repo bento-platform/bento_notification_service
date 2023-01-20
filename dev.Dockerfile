@@ -4,7 +4,7 @@ FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.01.17
 USER root
 RUN apt-get update -y && apt-get install -y libpq-dev python-dev
 
-RUN pip install --no-cache-dir poetry==1.2.2 "gunicorn==20.1.0"
+RUN pip install --no-cache-dir poetry==1.3.2 "gunicorn==20.1.0"
 
 WORKDIR /notification
 
