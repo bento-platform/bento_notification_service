@@ -14,6 +14,8 @@ BASEDIR = os.environ.get("DATABASE", APP_DIR.parent)
 
 
 class Config:
+    BENTO_DEBUG = os.environ.get("BENTO_DEBUG", "false").strip().lower() in ("1", "true")
+
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASEDIR, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SERVICE_ID = os.environ.get("SERVICE_ID", ":".join(SERVICE_TYPE.values()))
