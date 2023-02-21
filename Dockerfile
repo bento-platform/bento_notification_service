@@ -1,6 +1,6 @@
-FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.02.09
+FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.02.21
 
-# TODO: change USER
+# Run as root in the Dockerfile until we drop down to the service user in the entrypoint
 USER root
 RUN apt-get update -y && apt-get install -y libpq-dev python-dev
 
@@ -24,6 +24,7 @@ RUN poetry install --without dev --no-root
 # (Don't use .dockerignore, which allows us to have development containers too)
 COPY bento_notification_service bento_notification_service
 COPY entrypoint.bash .
+COPY run.bash .
 COPY LICENSE .
 COPY README.md .
 RUN ls /notification
@@ -32,4 +33,7 @@ RUN ls /notification
 RUN poetry install --without dev
 
 # Run
+#  - Must be ENTRYPOINT and not CMD since this needs root to fix permissions, after which it drops down via gosu
+#  - CMD passes script to run after fixing up permissions with root and dropping down into the service user
 ENTRYPOINT [ "bash", "./entrypoint.bash" ]
+CMD [ "bash", "./run.bash" ]

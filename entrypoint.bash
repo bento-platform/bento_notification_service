@@ -1,18 +1,17 @@
 #!/bin/bash
 
-export FLASK_APP='bento_notification_service.app:create_app()'
+# If set, use the local UID from outside the container (or default to 1000)
+USER_ID=${BENTO_UID:-1000}
 
-if [[ -z "${INTERNAL_PORT}" ]]; then
-  # Set default internal port to 5000
-  INTERNAL_PORT=5000
-fi
+echo "[bento_notification_service] [entrypoint] starting with USER_ID=${USER_ID}"
 
-# Run migrations, if needed
-flask db upgrade
+# Create service user
+useradd --shell /bin/bash -u "${USER_ID}" --non-unique -c "Bento container user" -m bento_user
+export HOME=/home/bento_user
 
-# Start API server - explicitly 1 worker for now
-# shellcheck disable=SC2003
-# shellcheck disable=SC2046
-gunicorn "${FLASK_APP}" \
-  --workers 1 \
-  --bind "0.0.0.0:${INTERNAL_PORT}"
+# Fix permissions on /notification
+chown -R bento_user:bento_user /notification
+chmod -R o-rwx /notification  # Remove all access from others
+
+# Drop into bento_user from root and execute the CMD specified for the image
+exec gosu bento_user "$@"
