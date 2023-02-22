@@ -1,10 +1,16 @@
 FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.02.21
 
+SHELL ["/bin/bash", "-c"]
+
 # Run as root in the Dockerfile until we drop down to the service user in the entrypoint
 USER root
-RUN apt-get update -y && apt-get install -y libpq-dev python-dev
 
-RUN pip install --no-cache-dir poetry==1.3.2 gunicorn==20.1.0
+RUN apt-get update -y && \
+    apt-get install -y libpq-dev python-dev && \
+    rm -rf /var/lib/apt/lists/* && \
+    python -m venv /env && \
+    source /env/bin/activate && \
+    pip install --no-cache-dir poetry==1.3.2 "gunicorn==20.1.0"
 
 WORKDIR /notification
 
@@ -20,7 +26,7 @@ COPY run.dev.bash .
 # Install production + development dependencies
 # Without --no-root, we get errors related to the code not being copied in yet.
 # But we don't want the code here, otherwise Docker cache doesn't work well.
-RUN poetry install --no-root
+RUN source /env/bin/activate && poetry install --no-root
 
 # Don't include actual code in the development image - will be mounted in using a volume.
 
