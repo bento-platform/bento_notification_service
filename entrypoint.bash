@@ -5,10 +5,14 @@ cd /notification || exit
 # Create bento_user + home
 source /create_service_user.bash
 
-# Fix permissions on /notification and /env
-chown -R bento_user:bento_user /notification /env
+# Fix permissions on /notification, the database, and /env
+chown -R bento_user:bento_user /notification
 if [[ -n "${DATABASE}" ]]; then
+  chown -R bento_user:bento_user "${DATABASE}"
   chmod -R o-rwx "${DATABASE}"  # Remove all access from others to the database
+fi
+if [[ -d /env ]]; then
+  chown -R bento_user:bento_user /env
 fi
 
 # Drop into bento_user from root and execute the CMD specified for the image
