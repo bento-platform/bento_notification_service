@@ -1,18 +1,19 @@
 #!/bin/bash
 
-export FLASK_APP='bento_notification_service.app:create_app()'
+cd /notification || exit
 
-if [[ -z "${INTERNAL_PORT}" ]]; then
-  # Set default internal port to 5000
-  INTERNAL_PORT=5000
+# Create bento_user + home
+source /create_service_user.bash
+
+# Fix permissions on /notification, the database, and /env
+chown -R bento_user:bento_user /notification
+if [[ -n "${DATABASE}" ]]; then
+  chown -R bento_user:bento_user "${DATABASE}"
+  chmod -R o-rwx "${DATABASE}"  # Remove all access from others to the database
+fi
+if [[ -d /env ]]; then
+  chown -R bento_user:bento_user /env
 fi
 
-# Run migrations, if needed
-flask db upgrade
-
-# Start API server - explicitly 1 worker for now
-# shellcheck disable=SC2003
-# shellcheck disable=SC2046
-gunicorn "${FLASK_APP}" \
-  --workers 1 \
-  --bind "0.0.0.0:${INTERNAL_PORT}"
+# Drop into bento_user from root and execute the CMD specified for the image
+exec gosu bento_user "$@"
