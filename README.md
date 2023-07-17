@@ -33,11 +33,20 @@ poetry install
 Afterward, we need to set up the DB:
 
 ```bash
-flask db upgrade
+poetry run flask db upgrade
 ```
 
 To create migrations, make sure your database is on the latest migration. Then, do the following:
 
 ```bash
-flask db migrate -m "Some message here"
+poetry run flask db migrate -m "Some message here"
+```
+
+
+## Testing
+
+To test locally, run:
+
+```bash
+poetry run tox
 ```
