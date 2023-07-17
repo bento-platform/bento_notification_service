@@ -1,7 +1,5 @@
+import os
 import pytest
-from bento_notification_service.app import create_app
-from bento_notification_service.db import db
-from bento_notification_service.models import Notification
 
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
@@ -9,6 +7,11 @@ SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 @pytest.fixture()
 def app():
+    os.environ["AUTHZ_ENABLED"] = "false"
+
+    from bento_notification_service.app import create_app
+    from bento_notification_service.db import db
+
     application = create_app()
 
     application.config.update({
@@ -33,6 +36,11 @@ def client(app):
 # if not in session scope we get DetachedInstanceError, not bound to a Session
 @pytest.fixture()
 def notification():
+    os.environ["AUTHZ_ENABLED"] = "false"
+
+    from bento_notification_service.db import db
+    from bento_notification_service.models import Notification
+
     n = Notification(
         title="some title",
         description="some description"

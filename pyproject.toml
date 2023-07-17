@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "bento_notification_service"
-version = "2.4.1"
+version = "3.0.0"
 description = "Notification service for the Bento platform."
 authors = ["David Lougheed <david.lougheed@mail.mcgill.ca>", "Simon Chénard <simon.chenard2@mcgill.ca>"]
 readme = "README.md"
@@ -22,12 +22,14 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
-bento-lib = {extras = ["flask"], version = "^5.4.0"}
+python = "^3.10.0"
+bento-lib = {extras = ["flask"], version = "^7.0.0"}
 Flask-Migrate = "^4.0.2"
 Flask = "~2.2.2"
 flask-sqlalchemy = "^3.0.2"
 SQLAlchemy = "^1.4.45"
+werkzeug = "~2.2.3"
+flask-cors = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.4.5"

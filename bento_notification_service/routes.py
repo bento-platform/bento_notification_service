@@ -1,28 +1,31 @@
 import subprocess
 import uuid
 
-from bento_lib.auth.flask_decorators import flask_permissions_owner
 from bento_lib.responses.flask_errors import flask_not_found_error
 from flask import Blueprint, current_app, jsonify
 
-from bento_notification_service import __version__
+from . import __version__
+from .authz import authz_middleware, PERMISSION_VIEW_NOTIFICATIONS
 from .db import db
 from .constants import BENTO_SERVICE_KIND, SERVICE_NAME, SERVICE_TYPE, ORG_C3G
 from .models import Notification
 
 
+RESOURCE_EVERYTHING = {"everything": True}
+PERMISSION_SET_VIEW = frozenset({PERMISSION_VIEW_NOTIFICATIONS})
+
 notification_service = Blueprint("notification_service", __name__)
 
 
 @notification_service.route("/notifications", methods=["GET"])
-@flask_permissions_owner
+@authz_middleware.deco_require_permissions_on_resource(PERMISSION_SET_VIEW, RESOURCE_EVERYTHING)
 def notification_list():
     notifications = Notification.query.all()
     return jsonify([n.serialize for n in notifications])
 
 
 @notification_service.route("/notifications/all-read", methods=["PUT"])
-@flask_permissions_owner
+@authz_middleware.deco_require_permissions_on_resource(PERMISSION_SET_VIEW, RESOURCE_EVERYTHING)
 def notification_all_read():
     # TODO: This is slow/non-optimal but we shouldn't have enough notifications for it to matter.
     #  Ideally, it would be done using a bulk update query.
@@ -36,14 +39,14 @@ def notification_all_read():
 
 
 @notification_service.route("/notifications/<uuid:n_id>", methods=["GET"])
-@flask_permissions_owner
+@authz_middleware.deco_require_permissions_on_resource(PERMISSION_SET_VIEW, RESOURCE_EVERYTHING)
 def notification_detail(n_id: uuid.UUID):
     notification = Notification.query.filter_by(id=str(n_id)).first()
     return jsonify(notification.serialize) if notification else flask_not_found_error(f"Notification {n_id} not found")
 
 
 @notification_service.route("/notifications/<uuid:n_id>/read", methods=["PUT"])
-@flask_permissions_owner
+@authz_middleware.deco_require_permissions_on_resource(PERMISSION_SET_VIEW, RESOURCE_EVERYTHING)
 def notification_read(n_id: uuid.UUID):
     notification = Notification.query.filter_by(id=str(n_id)).first()
 
@@ -57,6 +60,7 @@ def notification_read(n_id: uuid.UUID):
 
 
 @notification_service.route("/service-info", methods=["GET"])
+@authz_middleware.deco_public_endpoint
 def service_info():
     bento_debug = current_app.config["BENTO_DEBUG"]
 
