@@ -30,7 +30,7 @@ installed using the following command:
 poetry install
 ```
 
-Afterwards we need to set up the DB:
+Afterward, we need to set up the DB:
 
 ```bash
 flask db upgrade
