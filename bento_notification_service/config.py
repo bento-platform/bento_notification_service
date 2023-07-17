@@ -37,3 +37,6 @@ class Config:
     # Authz
     AUTHZ_ENABLED = os.environ.get("AUTHZ_ENABLED", "true").strip().lower() in TRUTH_VALUES
     AUTHZ_URL: str = _get_from_environ_or_fail("BENTO_AUTHZ_SERVICE_URL").strip().rstrip("/") if AUTHZ_ENABLED else ""
+
+    # CORS
+    CORS_ORIGINS: list[str] | str = os.environ.get("CORS_ORIGINS", "").split(";") or "*"

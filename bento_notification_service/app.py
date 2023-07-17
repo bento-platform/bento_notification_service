@@ -7,6 +7,7 @@ from bento_lib.responses.flask_errors import (
     flask_not_found_error
 )
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
@@ -21,6 +22,9 @@ from .routes import notification_service
 def create_app() -> Flask:
     application = Flask(__name__)
     application.config.from_object(Config)
+
+    # Set up CORS
+    CORS(application, origins=Config.CORS_ORIGINS)
 
     # Attach authorization middleware to application
     authz_middleware.attach(application)
