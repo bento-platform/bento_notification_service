@@ -3,11 +3,12 @@ from bento_lib.responses.flask_errors import (
     flask_error_wrap_with_traceback,
     flask_internal_server_error,
     flask_bad_request_error,
+    flask_forbidden_error,
     flask_not_found_error
 )
 from flask import Flask
 from flask_migrate import Migrate
-from werkzeug.exceptions import BadRequest, NotFound
+from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from .config import Config
 from .constants import MIGRATION_DIR, SERVICE_NAME
@@ -37,6 +38,7 @@ def create_app() -> Flask:
         )
     )
     application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_request_error))
+    application.register_error_handler(Forbidden, flask_error_wrap(flask_forbidden_error))
     application.register_error_handler(NotFound, flask_error_wrap(flask_not_found_error))
 
     # Start the event loop, or exit the service if Redis isn't available
