@@ -10,6 +10,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
+from .authz import authz_middleware
 from .config import Config
 from .constants import MIGRATION_DIR, SERVICE_NAME
 from .db import db
@@ -20,6 +21,9 @@ from .routes import notification_service
 def create_app() -> Flask:
     application = Flask(__name__)
     application.config.from_object(Config)
+
+    # Attach authorization middleware to application
+    authz_middleware.attach(application)
 
     # Initialize SQLAlchemy and migrate the database if necessary
     db.init_app(application)
