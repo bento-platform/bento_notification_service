@@ -8,8 +8,7 @@ db.sqlite3
 htmlcov/
 
 # IDE stuff
-.idea/workspace.xml
-.idea/dataSources*
+.idea/*
 *.swp
 *.swo
 
