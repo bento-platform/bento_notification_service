@@ -3,7 +3,6 @@ from .config import Config
 
 __all__ = [
     "authz_middleware",
-    "PERMISSION_CREATE_NOTIFICATIONS",
     "PERMISSION_VIEW_NOTIFICATIONS",
 ]
 
@@ -13,5 +12,4 @@ authz_middleware = FlaskAuthMiddleware(
     enabled=Config.AUTHZ_ENABLED,
 )
 
-PERMISSION_CREATE_NOTIFICATIONS = "create:notifications"
 PERMISSION_VIEW_NOTIFICATIONS = "view:notifications"
