@@ -8,7 +8,6 @@ USER root
 RUN apt-get update -y && \
     apt-get install -y libpq-dev python-dev && \
     rm -rf /var/lib/apt/lists/* && \
-    source /env/bin/activate && \
     pip install --no-cache-dir gunicorn==20.1.0
 
 WORKDIR /notification
