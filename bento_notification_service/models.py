@@ -1,7 +1,8 @@
-from uuid import uuid4
 from datetime import timezone
 from sqlalchemy.sql import func
-from bento_notification_service.db import db
+from uuid import uuid4
+
+from .db import db
 
 __all__ = [
     "Notification",

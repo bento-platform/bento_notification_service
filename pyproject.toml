@@ -23,7 +23,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10.0"
-bento-lib = {extras = ["flask"], version = "^8.1.0"}
+bento-lib = {extras = ["flask"], version = "9.0.0a6"}
 Flask-Migrate = "^4.0.5"
 Flask = "~2.2.5"
 flask-sqlalchemy = "^3.0.5"
