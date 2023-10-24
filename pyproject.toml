@@ -23,18 +23,18 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10.0"
-bento-lib = {extras = ["flask"], version = "^7.0.0"}
-Flask-Migrate = "^4.0.2"
-Flask = "~2.2.2"
-flask-sqlalchemy = "^3.0.2"
-SQLAlchemy = "^1.4.45"
+bento-lib = {extras = ["flask"], version = "^8.1.0"}
+Flask-Migrate = "^4.0.5"
+Flask = "~2.2.5"
+flask-sqlalchemy = "^3.0.5"
+SQLAlchemy = "^1.4.49"
 werkzeug = "~2.2.3"
 flask-cors = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
-tox = "^4.4.5"
-coverage = "^7.0.5"
-pytest = "^7.2.0"
-pytest-cov = "^4.0.0"
-flake8 = "^6.0.0"
-debugpy = "^1.6.3"
+tox = "^4.11.3"
+coverage = "^7.3.2"
+pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
+flake8 = "^6.1.0"
+debugpy = "^1.8.0"
