@@ -1,4 +1,4 @@
-FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.07.17
+FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.10.20
 
 # Run as root in the Dockerfile until we drop down to the service user in the entrypoint
 USER root
@@ -7,7 +7,7 @@ RUN apt-get update -y && \
     apt-get install -y libpq-dev python-dev && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir gunicorn==20.1.0
+RUN pip install --no-cache-dir gunicorn==21.2.0
 
 WORKDIR /notification
 

@@ -1,4 +1,4 @@
-FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.07.17
+FROM ghcr.io/bento-platform/bento_base_image:python-debian-2023.10.20
 
 SHELL ["/bin/bash", "-c"]
 
@@ -8,7 +8,7 @@ USER root
 RUN apt-get update -y && \
     apt-get install -y libpq-dev python-dev && \
     rm -rf /var/lib/apt/lists/* && \
-    pip install --no-cache-dir gunicorn==20.1.0
+    pip install --no-cache-dir gunicorn==21.2.0
 
 WORKDIR /notification
 
