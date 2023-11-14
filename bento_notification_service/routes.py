@@ -1,18 +1,19 @@
 import subprocess
 import uuid
 
+from bento_lib.auth.permissions import P_VIEW_NOTIFICATIONS
+from bento_lib.auth.resources import RESOURCE_EVERYTHING
 from bento_lib.responses.flask_errors import flask_not_found_error
 from flask import Blueprint, current_app, jsonify
 
 from . import __version__
-from .authz import authz_middleware, PERMISSION_VIEW_NOTIFICATIONS
+from .authz import authz_middleware
 from .db import db
 from .constants import BENTO_SERVICE_KIND, SERVICE_NAME, SERVICE_TYPE, ORG_C3G
 from .models import Notification
 
 
-RESOURCE_EVERYTHING = {"everything": True}
-PERMISSION_SET_VIEW = frozenset({PERMISSION_VIEW_NOTIFICATIONS})
+PERMISSION_SET_VIEW = frozenset({P_VIEW_NOTIFICATIONS})
 
 notification_service = Blueprint("notification_service", __name__)
 

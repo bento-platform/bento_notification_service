@@ -1,8 +1,9 @@
 import os
-from pathlib import Path
 
 from bento_lib.types import GA4GHServiceType, GA4GHServiceOrganization
-from bento_notification_service import __version__
+from pathlib import Path
+
+from . import __version__
 
 __all__ = [
     "APP_DIR",

@@ -42,12 +42,14 @@ def create_app() -> Flask:
         Exception,
         flask_error_wrap_with_traceback(
             flask_internal_server_error,
-            service_name=SERVICE_NAME
+            authz=authz_middleware,
+            service_name=SERVICE_NAME,
         )
     )
-    application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_request_error))
-    application.register_error_handler(Forbidden, flask_error_wrap(flask_forbidden_error))
-    application.register_error_handler(NotFound, flask_error_wrap(flask_not_found_error))
+    #  - Specific errors
+    application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_request_error, authz=authz_middleware))
+    application.register_error_handler(Forbidden, flask_error_wrap(flask_forbidden_error, authz=authz_middleware))
+    application.register_error_handler(NotFound, flask_error_wrap(flask_not_found_error, authz=authz_middleware))
 
     # Start the event loop, or exit the service if Redis isn't available
     with application.app_context():

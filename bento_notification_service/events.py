@@ -1,7 +1,6 @@
 import redis
 
 from flask import Flask
-from typing import Optional
 
 from bento_lib.events import EventBus
 from bento_lib.events.types import (
@@ -19,7 +18,7 @@ __all__ = ["start_event_bus"]
 
 
 # Global event bus tracker
-_global_event_bus: Optional[EventBus] = None
+_global_event_bus: EventBus | None = None
 
 
 def start_event_bus(application: Flask):
