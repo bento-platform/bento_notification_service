@@ -22,7 +22,7 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         name: Set up Python
         with:
           python-version: ${{ matrix.python-version }}
@@ -33,4 +33,6 @@ jobs:
       - name: Test
         run: poetry run pytest -svv --cov=bento_notification_service --cov-branch
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
