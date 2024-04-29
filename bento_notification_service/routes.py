@@ -1,21 +1,25 @@
-import subprocess
 import uuid
 
+from asgiref.sync import async_to_sync
 from bento_lib.auth.permissions import P_VIEW_NOTIFICATIONS
 from bento_lib.auth.resources import RESOURCE_EVERYTHING
 from bento_lib.responses.flask_errors import flask_not_found_error
+from bento_lib.service_info.helpers import build_service_info
 from flask import Blueprint, current_app, jsonify
 
 from . import __version__
 from .authz import authz_middleware
 from .db import db
 from .constants import BENTO_SERVICE_KIND, SERVICE_NAME, SERVICE_TYPE, ORG_C3G
+from .logger import logger
 from .models import Notification
 
 
 PERMISSION_SET_VIEW = frozenset({P_VIEW_NOTIFICATIONS})
 
 notification_service = Blueprint("notification_service", __name__)
+
+build_service_info_sync = async_to_sync(build_service_info)
 
 
 @notification_service.route("/notifications", methods=["GET"])
@@ -63,10 +67,7 @@ def notification_read(n_id: uuid.UUID):
 @notification_service.route("/service-info", methods=["GET"])
 @authz_middleware.deco_public_endpoint
 def service_info():
-    bento_debug = current_app.config["BENTO_DEBUG"]
-
-    # Spec: https://github.com/ga4gh-discovery/ga4gh-service-info
-    info = {
+    return build_service_info_sync({
         "id": current_app.config["SERVICE_ID"],
         "name": SERVICE_NAME,
         "type": SERVICE_TYPE,
@@ -74,30 +75,8 @@ def service_info():
         "organization": ORG_C3G,
         "contactUrl": "mailto:info@c3g.ca",
         "version": __version__,
-        "environment": "dev" if bento_debug else "prod",
         "bento": {
             "serviceKind": BENTO_SERVICE_KIND,
+            "gitRepository": "https://github.com/bento-platform/bento_notification_service",
         },
-    }
-
-    if not bento_debug:
-        return jsonify(info)
-
-    try:
-        if res_tag := subprocess.check_output(["git", "describe", "--tags", "--abbrev=0"]):
-            res_tag_str = res_tag.decode().rstrip()
-            # noinspection PyTypeChecker
-            info["bento"]["gitTag"] = res_tag_str
-        if res_branch := subprocess.check_output(["git", "branch", "--show-current"]):
-            res_branch_str = res_branch.decode().rstrip()
-            # noinspection PyTypeChecker
-            info["bento"]["gitBranch"] = res_branch_str
-        if res_commit := subprocess.check_output(["git", "rev-parse", "HEAD"]):
-            res_commit_str = res_commit.decode().rstrip()
-            # noinspection PyTypeChecker
-            info["bento"]["gitCommit"] = res_commit_str
-    except Exception as e:
-        except_name = type(e).__name__
-        current_app.logger.info(f"Could not retrieve git information: {str(except_name)}: {e}")
-
-    return jsonify(info)
+    }, debug=current_app.config["BENTO_DEBUG"], local=current_app.config["BENTO_CONTAINER_LOCAL"], logger=logger)

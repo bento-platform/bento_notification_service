@@ -25,6 +25,7 @@ def _get_from_environ_or_fail(var: str, logger: logging.Logger = logger_) -> str
 
 class Config:
     BENTO_DEBUG = os.environ.get("BENTO_DEBUG", "false").strip().lower() in TRUTH_VALUES
+    BENTO_CONTAINER_LOCAL = os.environ.get("BENTO_CONTAINER_LOCAL", "false").strip().lower() in TRUTH_VALUES
 
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASEDIR, "db.sqlite3")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
