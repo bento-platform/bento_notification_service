@@ -39,7 +39,7 @@ class Notification(db.Model):
             "notification_type": self.notification_type,
             "action_target": self.action_target,
             "read": bool(self.read),
-            "timestamp": self.timestamp.astimezone(timezone.utc).isoformat()
+            "timestamp": self.timestamp.astimezone(timezone.utc).isoformat(),
         }
 
 

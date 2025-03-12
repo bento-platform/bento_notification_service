@@ -1,6 +1,7 @@
 import os
 
-from bento_lib.service_info.types import GA4GHServiceType, GA4GHServiceOrganization
+from bento_lib.service_info.helpers import build_bento_service_type
+from bento_lib.service_info.types import GA4GHServiceType
 from pathlib import Path
 
 from . import __version__
@@ -12,7 +13,6 @@ __all__ = [
     "SERVICE_NAME",
     "SERVICE_ARTIFACT",
     "SERVICE_TYPE",
-    "ORG_C3G",
     "EVENT_PATTERN",
 ]
 
@@ -22,15 +22,6 @@ MIGRATION_DIR = os.path.join(APP_DIR, "migrations")
 BENTO_SERVICE_KIND = "notification"
 SERVICE_NAME = "Bento Notification Service"
 SERVICE_ARTIFACT = BENTO_SERVICE_KIND
-SERVICE_TYPE: GA4GHServiceType = {
-    "group": "ca.c3g.bento",
-    "artifact": SERVICE_ARTIFACT,
-    "version": __version__,
-}
-
-ORG_C3G: GA4GHServiceOrganization = {
-    "name": "C3G",
-    "url": "https://www.computationalgenomics.ca"
-}
+SERVICE_TYPE: GA4GHServiceType = build_bento_service_type(SERVICE_ARTIFACT, __version__)
 
 EVENT_PATTERN = "bento.*"

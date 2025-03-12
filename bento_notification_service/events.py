@@ -3,11 +3,7 @@ import redis
 from flask import Flask
 
 from bento_lib.events import EventBus
-from bento_lib.events.types import (
-    EVENT_CREATE_NOTIFICATION,
-    EVENT_NOTIFICATION,
-    EVENT_NOTIFICATION_SCHEMA
-)
+from bento_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION, EVENT_NOTIFICATION_SCHEMA
 
 from .db import db
 from .constants import SERVICE_ARTIFACT, EVENT_PATTERN
@@ -50,7 +46,7 @@ def start_event_bus(application: Flask):
                     title=event["data"]["title"],
                     description=event["data"]["description"],
                     notification_type=event["data"]["notification_type"],
-                    action_target=event["data"]["action_target"]
+                    action_target=event["data"]["action_target"],
                 )
 
                 db.session.add(n)
@@ -65,11 +61,7 @@ def start_event_bus(application: Flask):
                 if not n:
                     return
 
-                eb.publish_service_event(
-                    SERVICE_ARTIFACT,
-                    EVENT_NOTIFICATION,
-                    n.serialize
-                )
+                eb.publish_service_event(SERVICE_ARTIFACT, EVENT_NOTIFICATION, n.serialize)
 
         return _event_handler
 

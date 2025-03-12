@@ -14,9 +14,11 @@ def app():
 
     application = create_app()
 
-    application.config.update({
-        "SQLALCHEMY_DATABASE_URI": SQLALCHEMY_DATABASE_URI,
-    })
+    application.config.update(
+        {
+            "SQLALCHEMY_DATABASE_URI": SQLALCHEMY_DATABASE_URI,
+        }
+    )
 
     with application.app_context():
         db.create_all()
@@ -41,10 +43,7 @@ def notification():
     from bento_notification_service.db import db
     from bento_notification_service.models import Notification
 
-    n = Notification(
-        title="some title",
-        description="some description"
-    )
+    n = Notification(title="some title", description="some description")
 
     # Manually set ID for consistency's sake
     n.id = "da980925-244f-49ff-ab2f-b98a3a041b9a"

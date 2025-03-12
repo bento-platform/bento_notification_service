@@ -4,7 +4,7 @@ from bento_lib.responses.flask_errors import (
     flask_internal_server_error,
     flask_bad_request_error,
     flask_forbidden_error,
-    flask_not_found_error
+    flask_not_found_error,
 )
 from flask import Flask
 from flask_cors import CORS
@@ -44,7 +44,7 @@ def create_app() -> Flask:
             flask_internal_server_error,
             authz=authz_middleware,
             service_name=SERVICE_NAME,
-        )
+        ),
     )
     #  - Specific errors
     application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_request_error, authz=authz_middleware))

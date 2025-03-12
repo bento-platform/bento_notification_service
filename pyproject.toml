@@ -23,7 +23,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10.0"
-bento-lib = {version = "^11.6.0", extras = ["flask"]}
+bento-lib = {version = "^12.4.1", extras = ["flask"]}
 Flask-Migrate = "^4.0.5"
 Flask = "~3.0.3"
 flask-sqlalchemy = "~3.0.5"
@@ -36,5 +36,9 @@ tox = "^4.11.3"
 coverage = "^7.3.2"
 pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
-flake8 = "^7.0.0"
 debugpy = "^1.8.6"
+ruff = "^0.9.10"
+
+[tool.ruff]
+line-length = 120
+exclude = ["migrations"]
