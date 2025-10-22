@@ -11,8 +11,6 @@ flask db upgrade
 # Start API server - explicitly 1 worker for now
 # shellcheck disable=SC2003
 # shellcheck disable=SC2046
-uvicorn "${FLASK_APP}" \
-  --interface wsgi \
+gunicorn "${FLASK_APP}" \
   --workers 1 \
-  --host 0.0.0.0 \
-  --port "${INTERNAL_PORT}"
+  --bind "0.0.0.0:${INTERNAL_PORT}"
