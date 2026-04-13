@@ -33,6 +33,6 @@ jobs:
       - name: Test
         run: poetry run pytest -svv --cov=bento_notification_service --cov-branch
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
