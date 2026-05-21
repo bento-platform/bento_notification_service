@@ -3,7 +3,7 @@ FROM ghcr.io/bento-platform/bento_base_image:python-debian-2026.05.14
 # Run as root in the Dockerfile until we drop down to the service user in the entrypoint
 USER root
 
-RUN pip install --no-cache-dir gunicorn==25.3.0
+RUN pip install --no-cache-dir gunicorn==26.0.0
 
 WORKDIR /notification
 
