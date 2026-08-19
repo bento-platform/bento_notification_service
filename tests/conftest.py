@@ -1,6 +1,6 @@
 import os
-import pytest
 
+import pytest
 
 SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 

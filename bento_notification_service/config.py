@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 from .constants import APP_DIR, SERVICE_TYPE
 from .logger import logger as logger_
@@ -19,7 +20,7 @@ BASEDIR = os.environ.get("DATABASE", APP_DIR.parent)
 def _get_from_environ_or_fail(var: str, logger: logging.Logger = logger_) -> str:
     if (val := os.environ.get(var, "")) == "":
         logger.critical(f"{var} must be set")
-        exit(1)
+        sys.exit(1)
     return val
 
 

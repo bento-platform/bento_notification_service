@@ -1,8 +1,8 @@
 import os
+from pathlib import Path
 
 from bento_lib.service_info.helpers import build_bento_service_type
 from bento_lib.service_info.types import GA4GHServiceType
-from pathlib import Path
 
 from . import __version__
 

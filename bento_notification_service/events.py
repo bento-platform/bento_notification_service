@@ -1,14 +1,13 @@
+import sys
+
 import redis
-
-from flask import Flask
-
 from bento_lib.events import EventBus
 from bento_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION, EVENT_NOTIFICATION_SCHEMA
+from flask import Flask
 
+from .constants import EVENT_PATTERN, SERVICE_ARTIFACT
 from .db import db
-from .constants import SERVICE_ARTIFACT, EVENT_PATTERN
-from .models import Notification, HandledCreateNotifEvent
-
+from .models import HandledCreateNotifEvent, Notification
 
 __all__ = ["start_event_bus"]
 
@@ -79,4 +78,4 @@ def start_event_bus(application: Flask):
         event_bus.start_event_loop()
     except redis.exceptions.ConnectionError:  # pragma: no cover
         application.logger.error("Could not connect to Redis")
-        exit(1)
+        sys.exit(1)
