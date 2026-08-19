@@ -10,11 +10,10 @@ from flask import Blueprint, current_app, jsonify
 
 from . import __version__
 from .authz import authz_middleware
-from .db import db
 from .constants import BENTO_SERVICE_KIND, SERVICE_NAME, SERVICE_TYPE
+from .db import db
 from .logger import logger
 from .models import Notification
-
 
 PERMISSION_SET_VIEW = frozenset({P_VIEW_NOTIFICATIONS})
 

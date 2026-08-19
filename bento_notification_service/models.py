@@ -1,6 +1,7 @@
 from datetime import timezone
-from sqlalchemy.sql import func
 from uuid import uuid4
+
+from sqlalchemy.sql import func
 
 from .db import db
 
