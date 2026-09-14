@@ -30,6 +30,7 @@ flask-sqlalchemy = "~3.0.5"
 SQLAlchemy = "^1.4.49"
 flask-cors = "^6.0.1"
 asgiref = "^3.10.0"
+pydantic = "^2.13.5"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.31.0"

@@ -26,7 +26,7 @@ build_service_info_sync = async_to_sync(build_service_info)
 @authz_middleware.deco_require_permissions_on_resource(PERMISSION_SET_VIEW, RESOURCE_EVERYTHING)
 def notification_list():
     notifications = Notification.query.all()
-    return jsonify([n.serialize for n in notifications])
+    return jsonify([n.serialize() for n in notifications])
 
 
 @notification_service.route("/notifications/all-read", methods=["PUT"])
@@ -47,7 +47,9 @@ def notification_all_read():
 @authz_middleware.deco_require_permissions_on_resource(PERMISSION_SET_VIEW, RESOURCE_EVERYTHING)
 def notification_detail(n_id: uuid.UUID):
     notification = Notification.query.filter_by(id=str(n_id)).first()
-    return jsonify(notification.serialize) if notification else flask_not_found_error(f"Notification {n_id} not found")
+    return (
+        jsonify(notification.serialize()) if notification else flask_not_found_error(f"Notification {n_id} not found")
+    )
 
 
 @notification_service.route("/notifications/<uuid:n_id>/read", methods=["PUT"])
