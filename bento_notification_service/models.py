@@ -4,6 +4,7 @@ from uuid import uuid4
 from sqlalchemy.sql import func
 
 from .db import db
+from .pydantic_models import NotificationResponse
 
 __all__ = [
     "Notification",
@@ -31,17 +32,20 @@ class Notification(db.Model):
     def is_read(self):
         self._read = 1
 
-    @property
     def serialize(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "notification_type": self.notification_type,
-            "action_target": self.action_target,
-            "read": bool(self.read),
-            "timestamp": self.timestamp.astimezone(timezone.utc).isoformat(),
-        }
+        """
+        Serializes a notification database object as a JSON-compatible dictionary via Pydantic.
+        TODO: future: just return Pydantic instance for FastAPI port
+        """
+        return NotificationResponse(
+            id=self.id,
+            title=self.title,
+            description=self.description,
+            notification_type=self.notification_type,
+            action_target=self.action_target,
+            read=bool(self.read),
+            timestamp=self.timestamp.astimezone(timezone.utc),
+        ).model_dump(mode="json")
 
 
 class HandledCreateNotifEvent(db.Model):
@@ -53,7 +57,3 @@ class HandledCreateNotifEvent(db.Model):
     id = db.Column(db.String, primary_key=True)
     notification = db.Column(db.String, db.ForeignKey(f"{Notification.__table__}.id"), nullable=False)
     handled_at = db.Column(db.DateTime, server_default=func.now())
-
-    @property
-    def serialize(self):
-        return {"id": self.id, "handled_at": self.handled_at.astimezone(timezone.utc).isoformat()}
