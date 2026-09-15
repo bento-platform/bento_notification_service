@@ -1,25 +1,31 @@
-from datetime import timezone
+from datetime import datetime, timezone
 from uuid import uuid4
 
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column
 from sqlalchemy.sql import func
 
-from .db import db
 from .pydantic_models import NotificationResponse
 
 __all__ = [
+    "Base",
     "Notification",
     "HandledCreateNotifEvent",
 ]
 
+Base = declarative_base()
 
-class Notification(db.Model):
-    id = db.Column(db.String, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    description = db.Column(db.String, nullable=False)
-    notification_type = db.Column(db.String)
-    action_target = db.Column(db.String)
-    _read = db.Column(db.Integer, default=0)
-    timestamp = db.Column(db.DateTime, server_default=func.now())
+
+class Notification(Base):
+    __tablename__ = "notification"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=False)
+    notification_type: Mapped[str | None]
+    action_target: Mapped[str | None]
+    _read: Mapped[int] = mapped_column(nullable=False, default=0)
+    timestamp: Mapped[datetime | None] = mapped_column(nullable=False, server_default=func.now())
 
     def __init__(self, *args, **kwargs):
         self.id = str(uuid4())
@@ -32,10 +38,9 @@ class Notification(db.Model):
     def is_read(self):
         self._read = 1
 
-    def serialize(self):
+    def to_pydantic(self):
         """
-        Serializes a notification database object as a JSON-compatible dictionary via Pydantic.
-        TODO: future: just return Pydantic instance for FastAPI port
+        Transforms a notification database object into a Pydantic object.
         """
         return NotificationResponse(
             id=self.id,
@@ -45,15 +50,17 @@ class Notification(db.Model):
             action_target=self.action_target,
             read=bool(self.read),
             timestamp=self.timestamp.astimezone(timezone.utc),
-        ).model_dump(mode="json")
+        )
 
 
-class HandledCreateNotifEvent(db.Model):
+class HandledCreateNotifEvent(Base):
     """
     Representation of a handled create_notification event, to allow for scaling the notification service
     without accidentally handling an event more than once.
     """
 
-    id = db.Column(db.String, primary_key=True)
-    notification = db.Column(db.String, db.ForeignKey(f"{Notification.__table__}.id"), nullable=False)
-    handled_at = db.Column(db.DateTime, server_default=func.now())
+    __tablename__ = "handled_create_notif_event"
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+    notification: Mapped[str] = mapped_column(ForeignKey("notification.id"), nullable=False)
+    handled_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())

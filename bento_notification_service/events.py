@@ -60,7 +60,7 @@ def start_event_bus(application: Flask):
                 if not n:
                     return
 
-                eb.publish_service_event(SERVICE_ARTIFACT, EVENT_NOTIFICATION, n.serialize())
+                eb.publish_service_event(SERVICE_ARTIFACT, EVENT_NOTIFICATION, n.to_pydantic())
 
         return _event_handler
 
