@@ -13,7 +13,7 @@ from werkzeug.exceptions import BadRequest, Forbidden, NotFound
 
 from .authz import authz_middleware
 from .config import Config
-from .constants import MIGRATION_DIR, SERVICE_NAME
+from .constants import MIGRATION_DIR
 from .db import db
 from .events import start_event_bus
 from .routes import notification_service
@@ -31,7 +31,7 @@ def create_app() -> Flask:
 
     # Initialize SQLAlchemy and migrate the database if necessary
     db.init_app(application)
-    Migrate(application, db, directory=MIGRATION_DIR)
+    Migrate(application, db, directory=MIGRATION_DIR, render_as_batch=True)
 
     # Mount the application routes
     application.register_blueprint(notification_service)
@@ -40,11 +40,7 @@ def create_app() -> Flask:
     #  - Generic catch-all
     application.register_error_handler(
         Exception,
-        flask_error_wrap_with_traceback(
-            flask_internal_server_error,
-            authz=authz_middleware,
-            service_name=SERVICE_NAME,
-        ),
+        flask_error_wrap_with_traceback(flask_internal_server_error, authz=authz_middleware),
     )
     #  - Specific errors
     application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_request_error, authz=authz_middleware))
