@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
+from .models import Base
+
 __all__ = ["db"]
 
-db: SQLAlchemy = SQLAlchemy(engine_options={"future": True})
+db: SQLAlchemy = SQLAlchemy(model_class=Base)
