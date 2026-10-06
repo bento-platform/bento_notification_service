@@ -6,7 +6,7 @@ build-backend = "poetry.core.masonry.api"
 name = "bento_notification_service"
 version = "4.0.0"
 description = "Notification service for the Bento platform."
-authors = ["David Lougheed <david.lougheed@mail.mcgill.ca>", "Simon Chénard <simon.chenard2@mcgill.ca>"]
+authors = ["David Lougheed <david.lougheed@mail.mcgill.ca>", "Simon Chénard <simon.chenard2@mcgill.ca>", "Sanjeev Lakhwani"]
 readme = "README.md"
 packages = [{include = "bento_notification_service"}]
 include = [
