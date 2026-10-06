@@ -14,6 +14,12 @@ The Bento notification service is configured via environment variables
    `db.sqlite3` file can be found or created.
  * `REDIS_HOST`: Redis server host. Default: `localhost`
  * `REDIS_PORT`: Redis server port. Default: `6379`
+ * `BENTO_AUTHZ_SERVICE_URL`: Bento authorization service URL. Required unless authorization is disabled.
+ * `BENTO_AUTHZ_ENABLED` (legacy name: `AUTHZ_ENABLED`): Whether to enforce authorization. Default: `true`
+ * `CORS_ORIGINS`: Semicolon-separated list of allowed CORS origins.
+
+Other standard Bento service variables (`BENTO_DEBUG`, `BENTO_CONTAINER_LOCAL`, `SERVICE_ID`, etc.) are defined by
+`bento_lib.config.pydantic.BentoFastAPIBaseConfig`.
 
 
 ## Running in Development
@@ -30,16 +36,22 @@ installed using the following command:
 poetry install
 ```
 
-Afterward, we need to set up the DB:
+Afterward, we need to set up the DB (Alembic migrations; the DB location comes from the `DATABASE` variable):
 
 ```bash
-poetry run flask db upgrade
+poetry run alembic -c bento_notification_service/migrations/alembic.ini upgrade head
 ```
 
 To create migrations, make sure your database is on the latest migration. Then, do the following:
 
 ```bash
-poetry run flask db migrate -m "Some message here"
+poetry run alembic -c bento_notification_service/migrations/alembic.ini revision --autogenerate -m "Some message here"
+```
+
+To run the service (FastAPI, via uvicorn) locally:
+
+```bash
+poetry run uvicorn --factory bento_notification_service.app:create_app --port 5000 --reload
 ```
 
 

@@ -1,0 +1,18 @@
+from alembic import command
+from alembic.config import Config as AlembicConfig
+from sqlalchemy import create_engine, inspect
+
+from bento_notification_service.constants import APP_DIR
+
+
+def test_migrations_upgrade_to_head(tmp_path):
+    db_url = f"sqlite:///{tmp_path / 'db.sqlite3'}"
+
+    cfg = AlembicConfig(str(APP_DIR / "migrations" / "alembic.ini"))
+    cfg.set_main_option("sqlalchemy.url", db_url)
+
+    command.upgrade(cfg, "head")
+    command.upgrade(cfg, "head")  # idempotent, as on every service start
+
+    tables = set(inspect(create_engine(db_url)).get_table_names())
+    assert {"notification", "handled_create_notif_event", "alembic_version"} <= tables
