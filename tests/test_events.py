@@ -1,3 +1,4 @@
+from bento_lib.events.notifications import format_notification
 from bento_lib.events.types import EVENT_CREATE_NOTIFICATION, EVENT_NOTIFICATION
 from sqlalchemy import select
 
@@ -18,12 +19,7 @@ def _message(event_id: str | None = "event-1"):
         "data": {
             "type": EVENT_CREATE_NOTIFICATION,
             **({"id": event_id} if event_id else {}),
-            "data": {
-                "title": "t",
-                "description": "d",
-                "notification_type": "some_type",
-                "action_target": "/somewhere",
-            },
+            "data": format_notification("t", "d", "some_type", "/somewhere"),
         }
     }
 
