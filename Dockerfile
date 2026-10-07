@@ -21,6 +21,7 @@ RUN poetry config virtualenvs.create false && \
 # (Don't use .dockerignore, which allows us to have development containers too)
 COPY bento_notification_service bento_notification_service
 COPY entrypoint.bash .
+COPY alembic.ini .
 COPY run.bash .
 COPY LICENSE .
 COPY README.md .

@@ -39,13 +39,13 @@ poetry install
 Afterward, we need to set up the DB (Alembic migrations; the DB location comes from the `DATABASE` variable):
 
 ```bash
-poetry run alembic -c bento_notification_service/migrations/alembic.ini upgrade head
+poetry run alembic upgrade head
 ```
 
 To create migrations, make sure your database is on the latest migration. Then, do the following:
 
 ```bash
-poetry run alembic -c bento_notification_service/migrations/alembic.ini revision --autogenerate -m "Some message here"
+poetry run alembic revision --autogenerate -m "Some message here"
 ```
 
 To run the service (FastAPI, via uvicorn) locally:

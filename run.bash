@@ -4,7 +4,7 @@
 : "${INTERNAL_PORT:=5000}"
 
 # Run migrations, if needed
-alembic -c bento_notification_service/migrations/alembic.ini upgrade head
+alembic upgrade head
 
 # Start API server - explicitly 1 worker for now
 exec uvicorn \

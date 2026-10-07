@@ -13,7 +13,7 @@ poetry install
 : "${DEBUGGER_PORT:=5681}"
 
 # Run migrations, if needed
-alembic -c bento_notification_service/migrations/alembic.ini upgrade head
+alembic upgrade head
 
 # Start API server + debugger, with auto-reload on code changes
 python -m debugpy --listen "0.0.0.0:${DEBUGGER_PORT}" -m uvicorn \
