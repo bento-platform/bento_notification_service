@@ -3,8 +3,6 @@ FROM ghcr.io/bento-platform/bento_base_image:python-debian-2026.10.02
 # Run as root in the Dockerfile until we drop down to the service user in the entrypoint
 USER root
 
-RUN pip install --no-cache-dir gunicorn==26.2.0
-
 WORKDIR /notification
 
 # Create data directory
@@ -23,6 +21,7 @@ RUN poetry config virtualenvs.create false && \
 # (Don't use .dockerignore, which allows us to have development containers too)
 COPY bento_notification_service bento_notification_service
 COPY entrypoint.bash .
+COPY alembic.ini .
 COPY run.bash .
 COPY LICENSE .
 COPY README.md .

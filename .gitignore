@@ -17,3 +17,6 @@ htmlcov/
 *.db
 env
 __pycache__
+
+# VSCode
+.vscode/settings.json
