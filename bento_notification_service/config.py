@@ -1,44 +1,60 @@
-import logging
-import os
-import sys
+from functools import lru_cache
+from pathlib import Path
+from typing import Annotated
 
-from .constants import APP_DIR, SERVICE_TYPE
-from .logger import logger as logger_
+from bento_lib.config.pydantic import BentoFastAPIBaseConfig
+from bento_lib.service_info.types import BentoExtraServiceInfo
+from fastapi import Depends
+from pydantic import AliasChoices, Field, model_validator
+from pydantic_settings import SettingsConfigDict
+
+from .constants import APP_DIR, BENTO_SERVICE_KIND, GIT_REPOSITORY, SERVICE_NAME, SERVICE_TYPE
 
 __all__ = [
-    "BASEDIR",
+    "BENTO_EXTRA_SERVICE_INFO",
     "Config",
+    "get_config",
+    "ConfigDep",
 ]
 
-
-TRUTH_VALUES = ("true", "1")
-
-# DATABASE is set when deployed inside chord_singularity
-BASEDIR = os.environ.get("DATABASE", APP_DIR.parent)
-
-
-def _get_from_environ_or_fail(var: str, logger: logging.Logger = logger_) -> str:
-    if (val := os.environ.get(var, "")) == "":
-        logger.critical(f"{var} must be set")
-        sys.exit(1)
-    return val
+BENTO_EXTRA_SERVICE_INFO: BentoExtraServiceInfo = {
+    "serviceKind": BENTO_SERVICE_KIND,
+    "gitRepository": GIT_REPOSITORY,
+}
 
 
-class Config:
-    BENTO_DEBUG = os.environ.get("BENTO_DEBUG", "false").strip().lower() in TRUTH_VALUES
-    BENTO_CONTAINER_LOCAL = os.environ.get("BENTO_CONTAINER_LOCAL", "false").strip().lower() in TRUTH_VALUES
+class Config(BentoFastAPIBaseConfig):
+    model_config = SettingsConfigDict(extra="ignore", frozen=True)
 
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(BASEDIR, "db.sqlite3")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SERVICE_ID = os.environ.get("SERVICE_ID", ":".join(SERVICE_TYPE.values()))
+    service_id: str = ":".join(SERVICE_TYPE.values())
+    service_name: str = SERVICE_NAME
+    service_description: str = "Notification service for a Bento platform node."
 
-    # Resort to Redis defaults for host/port if not set
-    REDIS_HOST = os.environ.get("REDIS_HOST") or "localhost"
-    REDIS_PORT = os.environ.get("REDIS_PORT") or 6379
+    # (Misleadingly named) path to the **directory** in which db.sqlite3 can be found or created.
+    database: Path = APP_DIR.parent
 
-    # Authz
-    AUTHZ_ENABLED = os.environ.get("AUTHZ_ENABLED", "true").strip().lower() in TRUTH_VALUES
-    AUTHZ_URL: str = _get_from_environ_or_fail("BENTO_AUTHZ_SERVICE_URL").strip().rstrip("/") if AUTHZ_ENABLED else ""
+    redis_host: str = "localhost"
+    redis_port: int = 6379
 
-    # CORS
-    CORS_ORIGINS: list[str] | str = os.environ.get("CORS_ORIGINS", "").split(";") or "*"
+    # AUTHZ_ENABLED is the legacy (pre-FastAPI) name for this variable
+    bento_authz_enabled: bool = Field(True, validation_alias=AliasChoices("BENTO_AUTHZ_ENABLED", "AUTHZ_ENABLED"))
+    # Only required if authorization is enabled - checked below.
+    bento_authz_service_url: str = ""
+
+    @model_validator(mode="after")
+    def _check_authz_url_set_if_enabled(self):
+        if self.bento_authz_enabled and not self.bento_authz_service_url.strip():
+            raise ValueError("BENTO_AUTHZ_SERVICE_URL must be set when authorization is enabled")
+        return self
+
+    @property
+    def database_url(self) -> str:
+        return f"sqlite:///{self.database / 'db.sqlite3'}"
+
+
+@lru_cache
+def get_config() -> Config:
+    return Config()
+
+
+ConfigDep = Annotated[Config, Depends(get_config)]

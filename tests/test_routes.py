@@ -4,14 +4,14 @@ from jsonschema import validate
 
 def test_service_info(client):
     res = client.get("/service-info")
-    data = res.get_json()
+    data = res.json()
 
     validate(data, bento_lib.schemas.ga4gh.SERVICE_INFO_SCHEMA)
 
 
 def test_get_notifications(client, notification):
     res = client.get("/notifications")
-    data = res.get_json()
+    data = res.json()
 
     assert res.status_code == 200
     assert len(data) == 1
@@ -27,7 +27,7 @@ def test_notifications_all_read(client, notification):
     assert res.status_code == 204
 
     res = client.get(f"/notifications/{notification.id}")
-    data = res.get_json()
+    data = res.json()
 
     assert res.status_code == 200
     assert data["read"] is True
@@ -35,7 +35,7 @@ def test_notifications_all_read(client, notification):
 
 def test_get_notification(client, notification):
     res = client.get(f"/notifications/{notification.id}")
-    data = res.get_json()
+    data = res.json()
 
     assert res.status_code == 200
     assert data["title"] == notification.title
@@ -56,7 +56,7 @@ def test_notification_read(client, notification):
     assert res.status_code == 204
 
     res = client.get(f"/notifications/{notification.id}")
-    data = res.get_json()
+    data = res.json()
 
     assert res.status_code == 200
     assert data["read"] is True
@@ -66,3 +66,11 @@ def test_notification_read_fail(client):
     res = client.put("/notifications/ca2c2063-e744-408b-b486-79d3a48ef179/read")
 
     assert res.status_code == 404
+
+
+def test_notification_bad_uuid(client):
+    # Bento's FastAPI exception handlers turn validation errors into 400s
+    res = client.get("/notifications/not-a-uuid")
+
+    assert res.status_code == 400
+    assert res.json()["code"] == 400

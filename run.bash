@@ -1,16 +1,15 @@
 #!/bin/bash
 
-export FLASK_APP='bento_notification_service.app:create_app()'
-
 # Set default internal port to 5000
 : "${INTERNAL_PORT:=5000}"
 
 # Run migrations, if needed
-flask db upgrade
+alembic upgrade head
 
 # Start API server - explicitly 1 worker for now
-# shellcheck disable=SC2003
-# shellcheck disable=SC2046
-gunicorn "${FLASK_APP}" \
+exec uvicorn \
+  --factory bento_notification_service.app:create_app \
+  --host 0.0.0.0 \
+  --port "${INTERNAL_PORT}" \
   --workers 1 \
-  --bind "0.0.0.0:${INTERNAL_PORT}"
+  --proxy-headers

@@ -1,54 +1,39 @@
-from bento_lib.responses.flask_errors import (
-    flask_bad_request_error,
-    flask_error_wrap,
-    flask_error_wrap_with_traceback,
-    flask_forbidden_error,
-    flask_internal_server_error,
-    flask_not_found_error,
-)
-from flask import Flask
-from flask_cors import CORS
-from flask_migrate import Migrate
-from werkzeug.exceptions import BadRequest, Forbidden, NotFound
+from contextlib import asynccontextmanager
 
-from .authz import authz_middleware
-from .config import Config
-from .constants import MIGRATION_DIR
-from .db import db
-from .events import start_event_bus
-from .routes import notification_service
+from bento_lib.apps.fastapi import BentoFastAPI
+
+from . import __version__
+from .authz import get_authz_middleware
+from .config import BENTO_EXTRA_SERVICE_INFO, get_config
+from .constants import SERVICE_TYPE
+from .db import get_session_maker
+from .events import start_event_bus, stop_event_bus
+from .logger import logger
+from .routes import notification_router
+
+__all__ = ["create_app"]
 
 
-def create_app() -> Flask:
-    application = Flask(__name__)
-    application.config.from_object(Config)
-
-    # Set up CORS
-    CORS(application, origins=Config.CORS_ORIGINS)
-
-    # Attach authorization middleware to application
-    authz_middleware.attach(application)
-
-    # Initialize SQLAlchemy and migrate the database if necessary
-    db.init_app(application)
-    Migrate(application, db, directory=MIGRATION_DIR, render_as_batch=True)
-
-    # Mount the application routes
-    application.register_blueprint(notification_service)
-
-    # Set up generic exception handlers, to give nicely formatted responses
-    #  - Generic catch-all
-    application.register_error_handler(
-        Exception,
-        flask_error_wrap_with_traceback(flask_internal_server_error, authz=authz_middleware),
-    )
-    #  - Specific errors
-    application.register_error_handler(BadRequest, flask_error_wrap(flask_bad_request_error, authz=authz_middleware))
-    application.register_error_handler(Forbidden, flask_error_wrap(flask_forbidden_error, authz=authz_middleware))
-    application.register_error_handler(NotFound, flask_error_wrap(flask_not_found_error, authz=authz_middleware))
-
+@asynccontextmanager
+async def lifespan(_app: BentoFastAPI):
     # Start the event loop, or exit the service if Redis isn't available
-    with application.app_context():
-        start_event_bus(application)
+    start_event_bus(get_config(), get_session_maker())
+    try:
+        yield
+    finally:
+        stop_event_bus()
 
+
+def create_app() -> BentoFastAPI:
+    # BentoFastAPI sets up CORS, authorization, Bento-formatted error handlers, and the /service-info endpoint.
+    application = BentoFastAPI(
+        get_authz_middleware(),
+        get_config(),
+        logger,
+        BENTO_EXTRA_SERVICE_INFO,
+        SERVICE_TYPE,
+        __version__,
+        lifespan=lifespan,
+    )
+    application.include_router(notification_router)
     return application

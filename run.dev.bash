@@ -6,9 +6,6 @@
 # Update dependencies and install module locally (similar to pip install -e: "editable mode")
 poetry install
 
-export FLASK_ENV='development'
-export FLASK_APP='bento_notification_service.app:create_app()'
-
 # Set default internal port to 5000
 : "${INTERNAL_PORT:=5000}"
 
@@ -16,9 +13,11 @@ export FLASK_APP='bento_notification_service.app:create_app()'
 : "${DEBUGGER_PORT:=5681}"
 
 # Run migrations, if needed
-flask db upgrade
+alembic upgrade head
 
-# Start Flask + debugger
-python -m debugpy --listen "0.0.0.0:${DEBUGGER_PORT}" -m flask run \
+# Start API server + debugger, with auto-reload on code changes
+python -m debugpy --listen "0.0.0.0:${DEBUGGER_PORT}" -m uvicorn \
+  --factory bento_notification_service.app:create_app \
   --host 0.0.0.0 \
-  --port "${INTERNAL_PORT}"
+  --port "${INTERNAL_PORT}" \
+  --reload
