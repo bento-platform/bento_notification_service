@@ -1,7 +1,7 @@
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import pytest_asyncio
+from httpx2 import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
 
@@ -16,20 +16,20 @@ def config_env(monkeypatch):
     get_config.cache_clear()
 
 
-@pytest.fixture()
-def session_maker():
+@pytest_asyncio.fixture()
+async def session_maker():
     from bento_notification_service.models import Base
 
     # StaticPool: every connection must share the same in-memory database
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False}, poolclass=StaticPool)
-    Base.metadata.create_all(engine)
-    yield sessionmaker(engine, expire_on_commit=False)
-    Base.metadata.drop_all(engine)
-    engine.dispose()
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", poolclass=StaticPool)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield async_sessionmaker(engine, expire_on_commit=False)
+    await engine.dispose()
 
 
-@pytest.fixture()
-def client(monkeypatch, session_maker):
+@pytest_asyncio.fixture()
+async def client(monkeypatch, session_maker):
     from bento_notification_service import app as app_module
     from bento_notification_service.db import get_session
 
@@ -38,21 +38,21 @@ def client(monkeypatch, session_maker):
 
     application = app_module.create_app()
 
-    def _get_test_session():
-        with session_maker() as session:
+    async def _get_test_session():
+        async with session_maker() as session:
             yield session
 
     application.dependency_overrides[get_session] = _get_test_session
 
-    with TestClient(application) as c:
+    async with AsyncClient(transport=ASGITransport(app=application), base_url="http://test") as c:
         yield c
 
     application.dependency_overrides.clear()
 
 
 # if not in session scope we get DetachedInstanceError, not bound to a Session
-@pytest.fixture()
-def notification(session_maker):
+@pytest_asyncio.fixture()
+async def notification(session_maker):
     from bento_notification_service.models import Notification
 
     n = Notification(title="some title", description="some description")
@@ -60,8 +60,8 @@ def notification(session_maker):
     # Manually set ID for consistency's sake
     n.id = "da980925-244f-49ff-ab2f-b98a3a041b9a"
 
-    with session_maker() as session:
+    async with session_maker() as session:
         session.add(n)
-        session.commit()
+        await session.commit()
 
     yield n

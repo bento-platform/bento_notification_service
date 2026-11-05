@@ -30,8 +30,10 @@ python = "^3.12.0"
 bento-lib = {version = "^18.1.4", extras = ["fastapi"]}
 alembic = "^1.16.0"
 SQLAlchemy = "~2.0.53"
+greenlet = "^3.2.0"  # required by SQLAlchemy asyncio; its own marker excludes macOS arm64
 pydantic = "^2.13.5"
 fastapi = "^0.162.0"
+aiosqlite = "^0.22.1"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.31.0"
@@ -41,6 +43,7 @@ pytest-cov = "^7.0.0"
 debugpy = "^1.8.17"
 ruff = "^0.16.7"
 httpx2 = "^2.13.1"
+pytest-asyncio = "^1.4.1.post1"
 
 [tool.ruff]
 line-length = 120
@@ -48,3 +51,6 @@ exclude = ["migrations"]
 
 [tool.ruff.lint]
 ignore = ["RUF022"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

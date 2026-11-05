@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select, update
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .authz import require_view_notifications
 from .db import SessionDep
@@ -19,43 +19,43 @@ notification_router = APIRouter(prefix="/notifications", dependencies=[Depends(r
 
 class NotificationController:
     @staticmethod
-    def get_notifications(session: Session) -> list[Notification]:
-        return list(session.scalars(select(Notification)).all())
+    async def get_notifications(session: AsyncSession) -> list[Notification]:
+        return list((await session.scalars(select(Notification))).all())
 
     @staticmethod
-    def get_notification_by_id(session: Session, n_id: str | uuid.UUID) -> Notification | None:
-        return session.scalars(select(Notification).where(Notification.id == str(n_id))).one_or_none()
+    async def get_notification_by_id(session: AsyncSession, n_id: str | uuid.UUID) -> Notification | None:
+        return (await session.scalars(select(Notification).where(Notification.id == str(n_id)))).one_or_none()
 
     @staticmethod
-    def mark_all_notifications_as_read(session: Session):
-        session.execute(update(Notification).where(Notification._read == False).values(_read=True))
-        session.commit()
+    async def mark_all_notifications_as_read(session: AsyncSession):
+        await session.execute(update(Notification).where(Notification._read == False).values(_read=True))
+        await session.commit()
 
 
-def _get_notification_or_404(session: Session, n_id: uuid.UUID) -> Notification:
-    notification = NotificationController.get_notification_by_id(session, n_id)
+async def _get_notification_or_404(session: AsyncSession, n_id: uuid.UUID) -> Notification:
+    notification = await NotificationController.get_notification_by_id(session, n_id)
     if not notification:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Notification {n_id} not found")
     return notification
 
 
 @notification_router.get("", response_model=list[NotificationResponse])
-def notification_list(session: SessionDep):
-    return [n.to_pydantic() for n in NotificationController.get_notifications(session)]
+async def notification_list(session: SessionDep):
+    return [n.to_pydantic() for n in await NotificationController.get_notifications(session)]
 
 
 @notification_router.put("/all-read", status_code=status.HTTP_204_NO_CONTENT)
-def notification_all_read(session: SessionDep):
-    NotificationController.mark_all_notifications_as_read(session)
+async def notification_all_read(session: SessionDep):
+    await NotificationController.mark_all_notifications_as_read(session)
 
 
 @notification_router.get("/{n_id}", response_model=NotificationResponse)
-def notification_detail(n_id: uuid.UUID, session: SessionDep):
-    return _get_notification_or_404(session, n_id).to_pydantic()
+async def notification_detail(n_id: uuid.UUID, session: SessionDep):
+    return (await _get_notification_or_404(session, n_id)).to_pydantic()
 
 
 @notification_router.put("/{n_id}/read", status_code=status.HTTP_204_NO_CONTENT)
-def notification_read(n_id: uuid.UUID, session: SessionDep):
-    notification = _get_notification_or_404(session, n_id)
+async def notification_read(n_id: uuid.UUID, session: SessionDep):
+    notification = await _get_notification_or_404(session, n_id)
     notification.is_read()
-    session.commit()
+    await session.commit()
