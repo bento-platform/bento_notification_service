@@ -49,7 +49,7 @@ class Config(BentoFastAPIBaseConfig):
 
     @property
     def database_url(self) -> str:
-        return f"sqlite:///{self.database / 'db.sqlite3'}"
+        return f"sqlite+aiosqlite:///{self.database / 'db.sqlite3'}"
 
 
 @lru_cache

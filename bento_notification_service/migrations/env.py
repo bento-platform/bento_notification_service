@@ -1,8 +1,10 @@
+import asyncio
 import logging
 from logging.config import fileConfig
 
 from alembic import context
-from sqlalchemy import create_engine
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from bento_notification_service.config import get_config
 from bento_notification_service.models import Base
@@ -29,30 +31,41 @@ def run_migrations_offline():
         context.run_migrations()
 
 
+def _process_revision_directives(_context, _revision, directives):
+    # Prevent an auto-migration from being generated when there are no changes to the schema
+    if getattr(config.cmd_opts, "autogenerate", False):
+        script = directives[0]
+        if script.upgrade_ops.is_empty():
+            directives[:] = []
+            logger.info("No changes in schema detected.")
+
+
+def _do_run_migrations(connection: Connection):
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        process_revision_directives=_process_revision_directives,
+        render_as_batch=True,  # required for ALTER TABLE support in SQLite
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+async def _run_async_migrations():
+    connectable = create_async_engine(db_url)
+
+    async with connectable.connect() as connection:
+        await connection.run_sync(_do_run_migrations)
+
+    await connectable.dispose()
+
+
 def run_migrations_online():
     """
-    Run migrations in 'online' mode: create an Engine and associate a connection with the context.
+    Run migrations in 'online' mode: create an async Engine and associate a connection with the context.
     """
-
-    def process_revision_directives(_context, _revision, directives):
-        if getattr(config.cmd_opts, "autogenerate", False):
-            script = directives[0]
-            if script.upgrade_ops.is_empty():
-                directives[:] = []
-                logger.info("No changes in schema detected.")
-
-    connectable = create_engine(db_url)
-
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            process_revision_directives=process_revision_directives,
-            render_as_batch=True,  # required for ALTER TABLE support in SQLite
-        )
-
-        with context.begin_transaction():
-            context.run_migrations()
+    asyncio.run(_run_async_migrations())
 
 
 if context.is_offline_mode():
