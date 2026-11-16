@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "bento_notification_service"
-version = "4.0.0"
+version = "4.0.1"
 description = "Notification service for the Bento platform."
 authors = [
     "David Lougheed <david.lougheed@mail.mcgill.ca>",
@@ -27,11 +27,11 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.12.0"
-bento-lib = {version = "^18.1.4", extras = ["fastapi"]}
+bento-lib = {version = "^18.2.0", extras = ["fastapi"]}
 alembic = "^1.16.0"
 SQLAlchemy = "~2.0.53"
 pydantic = "^2.13.5"
-fastapi = "^0.162.0"
+fastapi = "^0.163.1"
 
 [tool.poetry.group.dev.dependencies]
 tox = "^4.31.0"
@@ -39,7 +39,7 @@ coverage = "^7.15.4"
 pytest = "^9.0.1"
 pytest-cov = "^7.0.0"
 debugpy = "^1.8.17"
-ruff = "^0.16.7"
+ruff = "^0.17.5"
 httpx2 = "^2.13.1"
 
 [tool.ruff]
