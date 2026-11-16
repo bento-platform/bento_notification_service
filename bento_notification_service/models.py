@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from sqlalchemy import ForeignKey
@@ -49,7 +49,7 @@ class Notification(Base):
             notification_type=self.notification_type,
             action_target=self.action_target,
             read=bool(self.read),
-            timestamp=self.timestamp.astimezone(timezone.utc),
+            timestamp=self.timestamp.astimezone(UTC),
         )
 
 
